@@ -11,13 +11,13 @@
             <SolidColorBrush Color="{DynamicResource MainWin_backgnd}"/>
         </Grid.Background>
         <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Right" Height="356" Margin="0,106,50,107" Stroke="Black" VerticalAlignment="Center" Width="588"/>
-        <Button x:Name="btn_configure_Copy" Content="Wybór portu" HorizontalAlignment="Left" Height="42" Margin="102,43,0,0" VerticalAlignment="Top" Width="152" Background="#FFFAFFCB" FontSize="14" FontFamily="Arial"/>
-        <Button Name="btn_configure" Content="Konfiguracja" HorizontalAlignment="Left" Height="42" Margin="102,106,0,0" VerticalAlignment="Top" Width="152" FontSize="14" FontFamily="Arial">
+        <Button Name="btn_changePort" Content="Wybór portu" HorizontalAlignment="Left" Height="42" Margin="102,43,0,0" VerticalAlignment="Top" Width="152" Background="#FFFAFFCB" FontSize="14" FontFamily="Arial" Click="Btn_changePort_Click"/>
+        <Button Name="btn_configure" Content="Konfiguracja" HorizontalAlignment="Left" Height="42" Margin="102,106,0,0" VerticalAlignment="Top" Width="152" FontSize="14" FontFamily="Arial" Click="Btn_configure_Click">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>
         </Button>
-        <ProgressBar Name="btn_progressBar" HorizontalAlignment="Left" Height="40" Margin="44,322,0,0" VerticalAlignment="Top" Width="268" Value="88">
+        <ProgressBar Name="progressBar" HorizontalAlignment="Left" Height="40" Margin="44,322,0,0" VerticalAlignment="Top" Width="268" Value="88">
             <ProgressBar.Foreground>
                 <SolidColorBrush Color="{DynamicResource LightRed}"/>
             </ProgressBar.Foreground>
@@ -33,7 +33,7 @@
             </Button.Background>
         </Button>
         <Label Name="lbl_portName" Content="" HorizontalAlignment="Left" Margin="530,31,0,0" VerticalAlignment="Top" Foreground="#FFFAFFCB" FontSize="36" FontFamily="Arial Unicode MS"/>
-        <Ellipse HorizontalAlignment="Left" Height="60" Margin="382,29,0,0" Stroke="Black" VerticalAlignment="Top" Width="60">
+        <Ellipse Name="connectionMarker" HorizontalAlignment="Left" Height="60" Margin="382,29,0,0" Stroke="Black" VerticalAlignment="Top" Width="60">
             <Ellipse.Fill>
                 <SolidColorBrush Color="{DynamicResource Connected}"/>
             </Ellipse.Fill>
