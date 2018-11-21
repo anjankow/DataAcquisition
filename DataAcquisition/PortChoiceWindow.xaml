@@ -11,9 +11,10 @@
         <SolidColorBrush Color="{DynamicResource OtherWin_backgnd}"/>
     </Window.Background>
     <Grid>
-        <ListBox Name="listBox_ports" HorizontalAlignment="Center" Height="216" Margin="27,24,27,0" VerticalAlignment="Top" Width="268"/>
-        <Button Name="btn_reload" Content="Odśwież listę" HorizontalAlignment="Left" Margin="108,267,0,0" VerticalAlignment="Top" Width="106" Height="28" Background="#FFDEDEDE"/>
-        <Button Name="btn_select" Content="Wybierz" HorizontalAlignment="Left" Margin="108,326,0,0" VerticalAlignment="Top" Width="106" Height="34">
+        <ListView Name="listView_ports" HorizontalAlignment="Center" Height="216" Margin="27,24,27,0" VerticalAlignment="Top" Width="268" FontSize="15" SelectionChanged="ListView_ports_SelectionChanged" SelectionMode="Single"/>
+
+        <Button Name="btn_reload" Content="Odśwież listę" HorizontalAlignment="Left" Margin="108,267,0,0" VerticalAlignment="Top" Width="106" Height="28" Background="#FFDEDEDE" Click="Btn_reload_Click"/>
+        <Button Name="btn_select" Content="Wybierz" Visibility="Hidden" HorizontalAlignment="Left" Margin="108,326,0,0" VerticalAlignment="Top" Width="106" Height="34" Click="Btn_select_Click" IsDefault="True">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>

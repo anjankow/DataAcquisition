@@ -25,7 +25,7 @@ namespace DataAcquisition
             var portChoiceWin = new PortChoiceWindow();
             portChoiceWin.ShowDialog();
 
-            InitializeComponent();
+            //InitializeComponent();
         }
     }
 }

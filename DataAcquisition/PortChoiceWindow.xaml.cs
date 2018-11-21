@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.IO.Ports;
 
 namespace DataAcquisition
 {
@@ -22,6 +23,43 @@ namespace DataAcquisition
         public PortChoiceWindow()
         {
             InitializeComponent();
+            foreach(var portName in SerialPort.GetPortNames())
+            {
+                listView_ports.Items.Add(portName);
+            }
         }
+
+        private void Btn_reload_Click(object sender, RoutedEventArgs e)
+        {
+            listView_ports.Items.Clear();
+            foreach (var portName in SerialPort.GetPortNames())
+            {   
+                listView_ports.Items.Add(portName);
+            }
+            if(listView_ports.HasItems)
+            {
+                listView_ports.SelectedItem = listView_ports.Items.GetItemAt(0);
+            }
+        }
+
+        private void ListView_ports_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(listView_ports.SelectedItem != null)
+            {
+                btn_select.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                btn_select.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void Btn_select_Click(object sender, RoutedEventArgs e)
+        {
+            DataAcquisition.DataContext.Port = listView_ports.SelectedItem.ToString();
+            Close();
+        }
+
+        
     }
 }
