@@ -1,0 +1,38 @@
+﻿<Window x:Class="DataAcquisition.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DataAcquisition"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="1000">
+    <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="{DynamicResource MainWin_backgnd}"/>
+        </Grid.Background>
+        <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Right" Height="356" Margin="0,106,50,107" Stroke="Black" VerticalAlignment="Center" Width="588"/>
+        <Button x:Name="btn_configure_Copy" Content="Wybór portu" HorizontalAlignment="Left" Height="42" Margin="102,43,0,0" VerticalAlignment="Top" Width="152" Background="#FFFAFFCB" FontSize="14" FontFamily="Arial"/>
+        <Button Name="btn_configure" Content="Konfiguracja" HorizontalAlignment="Left" Height="42" Margin="102,106,0,0" VerticalAlignment="Top" Width="152" FontSize="14" FontFamily="Arial">
+            <Button.Background>
+                <SolidColorBrush Color="{DynamicResource LightYellow}"/>
+            </Button.Background>
+        </Button>
+        <ProgressBar Name="btn_progressBar" HorizontalAlignment="Left" Height="40" Margin="44,322,0,0" VerticalAlignment="Top" Width="268" Value="88">
+            <ProgressBar.Foreground>
+                <SolidColorBrush Color="{DynamicResource LightRed}"/>
+            </ProgressBar.Foreground>
+        </ProgressBar>
+        <Button Name="btn_start" Content="Rozpocznij pomiary" HorizontalAlignment="Left" Height="56" Margin="82,228,0,0" VerticalAlignment="Top" Width="192" FontSize="14" FontFamily="Arial">
+            <Button.Background>
+                <SolidColorBrush Color="{DynamicResource Green}"/>
+            </Button.Background>
+        </Button>
+        <Button Name="btn_saveToCsv" Content="Zapisz do pliku CSV" HorizontalAlignment="Left" Height="42" Margin="82,436,0,0" VerticalAlignment="Top" Width="192" FontSize="14" FontFamily="Arial">
+            <Button.Background>
+                <SolidColorBrush Color="{DynamicResource GreenLighter}"/>
+            </Button.Background>
+        </Button>
+        <Label Name="lbl_portName" Content="" HorizontalAlignment="Left" Margin="588,31,0,0" VerticalAlignment="Top" Foreground="#FFFAFFCB" FontSize="36" FontFamily="Arial Rounded MT Bold"/>
+
+    </Grid>
+</Window>

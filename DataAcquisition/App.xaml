@@ -1,0 +1,16 @@
+﻿<Application x:Class="DataAcquisition.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:DataAcquisition"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+
+        <Color x:Key="MainWin_backgnd">#FF192B3E</Color>
+        <Color x:Key="OtherWin_backgnd">#FF355576</Color>
+        <Color x:Key="LightYellow">#FFFAFFCB</Color>
+        <Color x:Key="GreenLighter">#FFD0FFD9</Color>
+        <Color x:Key="Green">#FFACE4B7</Color>
+        <Color x:Key="LightRed">#FFD3746B</Color>
+
+    </Application.Resources>
+</Application>

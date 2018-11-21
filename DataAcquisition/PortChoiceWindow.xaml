@@ -1,0 +1,23 @@
+﻿<Window x:Class="DataAcquisition.PortChoiceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DataAcquisition"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="PortChoiceWindow" Height="450" Width="330">
+    <Window.Background>
+        <SolidColorBrush Color="{DynamicResource OtherWin_backgnd}"/>
+    </Window.Background>
+    <Grid>
+        <ListBox Name="listBox_ports" HorizontalAlignment="Center" Height="216" Margin="27,24,27,0" VerticalAlignment="Top" Width="268"/>
+        <Button Name="btn_reload" Content="Odśwież listę" HorizontalAlignment="Left" Margin="108,267,0,0" VerticalAlignment="Top" Width="106" Height="28" Background="#FFDEDEDE"/>
+        <Button Name="btn_select" Content="Wybierz" HorizontalAlignment="Left" Margin="108,326,0,0" VerticalAlignment="Top" Width="106" Height="34">
+            <Button.Background>
+                <SolidColorBrush Color="{DynamicResource LightYellow}"/>
+            </Button.Background>
+        </Button>
+
+    </Grid>
+</Window>
