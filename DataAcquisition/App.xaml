@@ -11,6 +11,8 @@
         <Color x:Key="GreenLighter">#FFD0FFD9</Color>
         <Color x:Key="Green">#FFACE4B7</Color>
         <Color x:Key="LightRed">#FFD3746B</Color>
+        <Color x:Key="Connected">#FF68B01F</Color>
+        <Color x:Key="Disconnected">#FFD82F15</Color>
 
     </Application.Resources>
 </Application>
