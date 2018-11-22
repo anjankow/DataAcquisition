@@ -23,46 +23,76 @@ namespace DataAcquisition
     /// </summary>
     public partial class MainWindow : Window
     {
+        public SerialPort serialPort;
+
         public MainWindow()
+        {
+            InitializeComponent();
+            ChooseAndOpenPort();
+            //serialPort.DataReceived += new SerialDataReceivedEventHandler(Receive);
+            //serialPort.ErrorReceived += new SerialErrorReceivedEventHandler(ErrorHandler);
+        }
+
+        private void Receive(object sender, SerialDataReceivedEventArgs e)
+        {
+            char data=(char)serialPort.ReadChar();
+            MessageBox.Show(": "+data);
+        }
+
+        private void ErrorHandler(object sender, SerialErrorReceivedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ChooseAndOpenPort()
         {
             var portChoiceWin = new PortChoiceWindow();
             portChoiceWin.ShowDialog();
-            InitializeComponent();
             lbl_portName.Content = "PORT " + DataAcquisition.DataContext.Port;
-            var serialPort = new SerialPort(DataAcquisition.DataContext.Port, 9600, Parity.None, 8, StopBits.One)
-            {
-                DtrEnable = true,
-                Handshake = Handshake.XOnXOff
-            };
+            serialPort = new SerialPort(DataAcquisition.DataContext.Port, 9600, Parity.None, 8, StopBits.One);
             serialPort.Open();
-            
-            if(serialPort.IsOpen)
+            if (!serialPort.IsOpen)
             {
-                lbl_portName.Content="open";
-               // connectionMarker.Fill = Resources["Connected"] as Brush;
-            }
-            else
-            {
-                lbl_portName.Content = "close";
-
-
-                // connectionMarker.Fill = Application.GetResourceStream("Disconnected") as Brush;
-
+                MessageBox.Show("Port nie został otworzony! Wybierz port jeszcze raz", "Błąd portu",
+                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                ChooseAndOpenPort();
             }
         }
-        
 
         private void Btn_changePort_Click(object sender, RoutedEventArgs e)
         {
-            var portChoiceWin = new PortChoiceWindow();
-            portChoiceWin.ShowDialog();
-            lbl_portName.Content = "PORT " + DataAcquisition.DataContext.Port;
+            ChooseAndOpenPort();
         }
 
         private void Btn_configure_Click(object sender, RoutedEventArgs e)
         {
+            ReactIfPortNotOpen();
             var confWindow = new ConfWindow();
             confWindow.ShowDialog();
         }
+
+        private void Btn_start_Click(object sender, RoutedEventArgs e)
+        {
+            ReactIfPortNotOpen();
+            serialPort.Write("o");  //start programu w STM
+            serialPort.Write("a");
+        }
+
+
+        private void ReactIfPortNotOpen()
+        {
+            if (!serialPort.IsOpen)
+            {
+                MessageBox.Show("Port nie został otworzony! Wybierz port jeszcze raz", "Błąd portu",
+                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                ChooseAndOpenPort();
+            }
+        }
+        
+        
     }
 }
+
+//connectionMarker.Visibility = Visibility.Visible;
+//btn_configure.IsEnabled = true;
+//btn_start.IsEnabled = true;

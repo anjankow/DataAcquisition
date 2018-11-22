@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DataAcquisition"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="PortChoiceWindow" Height="450" Width="330">
+        Title="Wybierz port" Height="450" Width="330" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" Closed="Window_Closed">
     <Window.Background>
         <SolidColorBrush Color="{DynamicResource OtherWin_backgnd}"/>
     </Window.Background>
