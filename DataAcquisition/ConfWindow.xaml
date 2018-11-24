@@ -28,7 +28,7 @@
             <Setter Property="FontSize" Value="15"/>
         </Style>
     </Window.Resources>
-    <Grid Background="#FF1D3C2B">
+    <Grid>
         <Label Name="lbl_wrongFreq" Content="Wartość musi być z zakresu 1 000 - 1 000 000" Style="{DynamicResource Normal}" HorizontalAlignment="Left" Margin="6,136,0,0" VerticalAlignment="Top" FontSize="12" Foreground="#FFFF821A"/>
         <Label Name="lbl_wrongBufSize" Content="Długość musi być liczbą z zakresu 2 - 16 000" Style="{DynamicResource ValidationInfo}" HorizontalAlignment="Left" Margin="308,136,0,0" VerticalAlignment="Top" />
         <Label Content="Częstotliwość próbkowania" Style="{DynamicResource Normal}" HorizontalAlignment="Left" Margin="30,25,0,0" VerticalAlignment="Top"/>
@@ -45,7 +45,11 @@
         <Label Content="próbek" HorizontalAlignment="Left" Style="{DynamicResource Normal}" Margin="469,57,0,0" VerticalAlignment="Top"/>
         <Slider Name="slid_frequency" HorizontalAlignment="Left" Margin="28,113,0,0" VerticalAlignment="Top" Width="206" RenderTransformOrigin="0.5,0.5" ValueChanged="Slid_frequency_ValueChanged" AutoToolTipPlacement="TopLeft" Minimum="1000" Maximum="1000000" SmallChange="1000" TickFrequency="10000" LargeChange="100000" Value="1000"/>
         <Button Name="btn_cancel" Content="Anuluj" HorizontalAlignment="Left" Margin="157,331,0,0" VerticalAlignment="Top" Style="{DynamicResource NotImportantBtnStyle}" Click="Btn_cancel_Click"/>
-        <Button Name="btn_OK" Content="OK" IsEnabled="False" HorizontalAlignment="Right" Margin="0,331,198,0" VerticalAlignment="Top" Style="{DynamicResource NotImportantBtnStyle}" Background="#FFF2F77A" Click="Btn_OK_Click"/>
+        <Button Name="btn_OK" Content="OK" IsEnabled="False" HorizontalAlignment="Right" Margin="0,331,198,0" VerticalAlignment="Top" Style="{DynamicResource NotImportantBtnStyle}" Click="Btn_OK_Click">
+            <Button.Background>
+                <SolidColorBrush Color="{DynamicResource LightYellow}"/>
+            </Button.Background>
+        </Button>
         <Slider Name="slid_bufferSize" HorizontalAlignment="Left" Margin="312,113,0,0" VerticalAlignment="Top" Width="206" ValueChanged="Slid_bufferSize_ValueChanged" AutoToolTipPlacement="TopLeft" Maximum="16000" Minimum="2" SmallChange="100" LargeChange="2000" TickFrequency="4000"/>
         <Label Name="lbl_wrongBuffNum" Content="Pole musi zawierać liczbę naturalną > 0" Style="{DynamicResource ResourceKey=ValidationInfo}" HorizontalAlignment="Left" Margin="312,269,0,0" VerticalAlignment="Top" />
     </Grid>

@@ -19,18 +19,20 @@ namespace DataAcquisition
         {
             InitializeComponent();
 
+            if(!ChooseAndOpenPort())
+            {
+                //port choice window closed, end of program
+                this.Close();
+            }
+
             DataAcquisition.DataContext.Port = String.Empty;
             DataAcquisition.DataContext.HowManyBuffers = 100;
             DataAcquisition.DataContext.HowManyADC = 1;
             DataAcquisition.DataContext.Frequency = 1000;
             DataAcquisition.DataContext.BufferSize = 1600;
-            /*if(!ChooseAndOpenPort())
-            {
-                //port choice window closed, end of program
-                this.Close();
-            }*/
 
-
+            btn_saveToCsv.IsEnabled = false;
+            progressBar.Value = 0;
         }
 
         private void ReceiveMesaurementsData(object sender, SerialDataReceivedEventArgs e)
@@ -142,7 +144,3 @@ namespace DataAcquisition
         }
     }
 }
-
-//connectionMarker.Visibility = Visibility.Visible;
-//btn_configure.IsEnabled = true;
-//btn_start.IsEnabled = true;

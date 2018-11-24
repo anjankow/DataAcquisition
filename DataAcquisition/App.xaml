@@ -6,13 +6,11 @@
     <Application.Resources>
 
         <Color x:Key="MainWin_backgnd">#FF192B3E</Color>
-        <Color x:Key="OtherWin_backgnd">#FF2E434D</Color>
+        <Color x:Key="OtherWin_backgnd">#FF1D3C2B</Color>
         <Color x:Key="LightYellow">#FFFAFFCB</Color>
         <Color x:Key="GreenLighter">#FFD0FFD9</Color>
         <Color x:Key="Green">#FFACE4B7</Color>
         <Color x:Key="LightRed">#FFD3746B</Color>
-        <Color x:Key="Connected">#FF68B01F</Color>
-        <Color x:Key="Disconnected">#FFD82F15</Color>
         <Color x:Key="NotImportantButton">#FFDEDEDE</Color>
 
         <Style TargetType="Button" x:Key="NotImportantBtnStyle">
@@ -20,6 +18,7 @@
             <Setter Property="Width" Value="106"/>
             <Setter Property="Background" Value="#FFDEDEDE"/>
         </Style>
+        <Color x:Key="ButtonOKcolor">#FFF2F77A</Color>
 
     </Application.Resources>
 </Application>

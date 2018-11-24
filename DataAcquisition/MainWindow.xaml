@@ -5,31 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DataAcquisition"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1000">
+        Title="MainWindow" Height="430" Width="500">
     <Grid>
         <Grid.Background>
-            <SolidColorBrush Color="{DynamicResource MainWin_backgnd}"/>
+            <SolidColorBrush Color="#FF04321D"/>
         </Grid.Background>
-        <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Right" Height="356" Margin="0,106,50,107" Stroke="Black" VerticalAlignment="Center" Width="588"/>
-        <Button Name="btn_changePort" Content="Wybór portu" HorizontalAlignment="Left" Height="42" Margin="102,43,0,0" VerticalAlignment="Top" Width="152" Background="#FFFAFFCB" FontSize="14" FontFamily="Arial" Click="Btn_changePort_Click"/>
-        <Button Name="btn_configure" Content="Konfiguracja" HorizontalAlignment="Left" Height="42" Margin="102,106,0,0" VerticalAlignment="Top" Width="152" FontSize="14" FontFamily="Arial" Click="Btn_configure_Click">
+        <Button Name="btn_changePort" Content="Wybór portu" HorizontalAlignment="Left" Height="42" Margin="60,44,0,0" VerticalAlignment="Top" Width="152" FontSize="14" FontFamily="Arial" Click="Btn_changePort_Click">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>
         </Button>
-        <ProgressBar Name="progressBar" HorizontalAlignment="Left" Height="40" Margin="44,322,0,0" VerticalAlignment="Top" Width="268" Value="0">
-            <ProgressBar.Foreground>
-                <SolidColorBrush Color="{DynamicResource LightRed}"/>
-            </ProgressBar.Foreground>
-        </ProgressBar>
-        <Button Name="btn_start" Content="Rozpocznij pomiary" HorizontalAlignment="Left" Height="56" Margin="82,228,0,0" VerticalAlignment="Top" Width="192" FontSize="14" FontFamily="Arial" Click="Btn_start_Click">
+        <Button Name="btn_configure" Content="Konfiguracja" HorizontalAlignment="Left" Height="42" Margin="60,107,0,0" VerticalAlignment="Top" Width="152" FontSize="14" FontFamily="Arial" Click="Btn_configure_Click">
             <Button.Background>
-                <SolidColorBrush Color="{DynamicResource Green}"/>
+                <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>
         </Button>
-        <Button Name="btn_saveToCsv" Content="Zapisz do pliku CSV" HorizontalAlignment="Left" Height="42" Margin="82,436,0,0" VerticalAlignment="Top" Width="192" FontSize="14" FontFamily="Arial" Click="Btn_saveToCsv_Click">
+        <ProgressBar Name="progressBar" HorizontalAlignment="Left" Height="40" Margin="60,214,0,0" VerticalAlignment="Top" Width="370" Value="80">
+            <ProgressBar.Foreground>
+                <SolidColorBrush Color="#FF4A9739"/>
+            </ProgressBar.Foreground>
+        </ProgressBar>
+        <Button Name="btn_start" Content="Rozpocznij &#xa; pomiary" HorizontalAlignment="Left" Height="63" Margin="288,69,0,0" VerticalAlignment="Top" Width="142" FontSize="14" FontFamily="Arial" Click="Btn_start_Click">
             <Button.Background>
-                <SolidColorBrush Color="{DynamicResource GreenLighter}"/>
+                <SolidColorBrush Color="{DynamicResource LightRed}"/>
+            </Button.Background>
+        </Button>
+        <Button Name="btn_saveToCsv" Content="Zapisz do pliku CSV" HorizontalAlignment="Left" Height="42" Margin="150,310,0,0" VerticalAlignment="Top" Width="192" FontSize="14" FontFamily="Arial" Click="Btn_saveToCsv_Click">
+            <Button.Background>
+                <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>
         </Button>
         <Label Name="lbl_portName" Content="" HorizontalAlignment="Left" Margin="530,31,0,0" VerticalAlignment="Top" Foreground="#FFFAFFCB" FontSize="36" FontFamily="Arial Unicode MS"/>
