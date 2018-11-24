@@ -33,11 +33,11 @@
             </Button.Background>
         </Button>
         <Label Name="lbl_portName" Content="" HorizontalAlignment="Left" Margin="530,31,0,0" VerticalAlignment="Top" Foreground="#FFFAFFCB" FontSize="36" FontFamily="Arial Unicode MS"/>
-        <Ellipse Name="connectionMarker" HorizontalAlignment="Left" Height="60" Margin="382,29,0,0" Stroke="Black" VerticalAlignment="Top" Width="60" IsEnabled="False">
+        <!--<Ellipse Name="connectionMarker" HorizontalAlignment="Left" Height="60" Margin="382,29,0,0" Stroke="Black" VerticalAlignment="Top" Width="60" IsEnabled="False">
             <Ellipse.Fill>
                 <SolidColorBrush Color="{DynamicResource Connected}"/>
             </Ellipse.Fill>
-        </Ellipse>
+        </Ellipse>-->
 
     </Grid>
 </Window>

@@ -24,13 +24,28 @@ namespace DataAcquisition
     public partial class MainWindow : Window
     {
         public SerialPort serialPort;
-
+        char[] ADC1_data; 
         public MainWindow()
         {
             InitializeComponent();
-            ChooseAndOpenPort();
-            //serialPort.DataReceived += new SerialDataReceivedEventHandler(Receive);
-            //serialPort.ErrorReceived += new SerialErrorReceivedEventHandler(ErrorHandler);
+            DataAcquisition.DataContext.Port = String.Empty;
+            DataAcquisition.DataContext.HowManyBuffers = 100;
+            DataAcquisition.DataContext.HowManyADC = 1;
+            DataAcquisition.DataContext.Frequency = 1000;
+            DataAcquisition.DataContext.BufferSize = 1600;
+
+            /*if(!ChooseAndOpenPort())
+            {
+                //port choice window closed, end of program
+                this.Close();
+            }*/
+            
+            
+        }
+
+        private void ReceiveMesaurementsData(object sender, SerialDataReceivedEventArgs e)
+        {
+            
         }
 
         private void Receive(object sender, SerialDataReceivedEventArgs e)
@@ -44,10 +59,20 @@ namespace DataAcquisition
             throw new NotImplementedException();
         }
 
-        private void ChooseAndOpenPort()
+        private bool ChooseAndOpenPort()
         {
+            string previousPort = DataAcquisition.DataContext.Port;
             var portChoiceWin = new PortChoiceWindow();
-            portChoiceWin.ShowDialog();
+            bool isPortChosen = (bool)portChoiceWin.ShowDialog();
+            
+            if (!isPortChosen)
+            {
+                return false;
+            }
+            if (String.Equals(DataAcquisition.DataContext.Port,previousPort))
+            {
+                return true;
+            }
             lbl_portName.Content = "PORT " + DataAcquisition.DataContext.Port;
             serialPort = new SerialPort(DataAcquisition.DataContext.Port, 9600, Parity.None, 8, StopBits.One);
             serialPort.Open();
@@ -57,6 +82,9 @@ namespace DataAcquisition
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 ChooseAndOpenPort();
             }
+            serialPort.DataReceived += new SerialDataReceivedEventHandler(Receive);
+            serialPort.ErrorReceived += new SerialErrorReceivedEventHandler(ErrorHandler);
+            return true;
         }
 
         private void Btn_changePort_Click(object sender, RoutedEventArgs e)
@@ -66,7 +94,6 @@ namespace DataAcquisition
 
         private void Btn_configure_Click(object sender, RoutedEventArgs e)
         {
-            ReactIfPortNotOpen();
             var confWindow = new ConfWindow();
             confWindow.ShowDialog();
         }

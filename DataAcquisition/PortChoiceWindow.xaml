@@ -6,14 +6,14 @@
         xmlns:local="clr-namespace:DataAcquisition"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Wybierz port" Height="450" Width="330" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" Closed="Window_Closed">
+        Title="Wybierz port" Height="450" Width="330" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" Closing="Window_Closing">
     <Window.Background>
         <SolidColorBrush Color="{DynamicResource OtherWin_backgnd}"/>
     </Window.Background>
     <Grid>
         <ListView Name="listView_ports" HorizontalAlignment="Center" Height="216" Margin="27,24,27,0" VerticalAlignment="Top" Width="268" FontSize="15" SelectionChanged="ListView_ports_SelectionChanged" SelectionMode="Single"/>
 
-        <Button Name="btn_reload" Content="Odśwież listę" HorizontalAlignment="Left" Margin="108,267,0,0" VerticalAlignment="Top" Width="106" Height="28" Background="#FFDEDEDE" Click="Btn_reload_Click"/>
+        <Button Name="btn_reload" Content="Odśwież listę" HorizontalAlignment="Left" Margin="108,267,0,0" VerticalAlignment="Top" Style="{DynamicResource NotImportantBtnStyle}" Click="Btn_reload_Click"/>
         <Button Name="btn_select" Content="Wybierz" Visibility="Hidden" HorizontalAlignment="Left" Margin="108,326,0,0" VerticalAlignment="Top" Width="106" Height="34" Click="Btn_select_Click" IsDefault="True">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>

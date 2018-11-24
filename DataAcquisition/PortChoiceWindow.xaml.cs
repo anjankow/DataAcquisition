@@ -23,7 +23,7 @@ namespace DataAcquisition
         public PortChoiceWindow()
         {
             InitializeComponent();
-            foreach(var portName in SerialPort.GetPortNames())
+            foreach (var portName in SerialPort.GetPortNames())
             {
                 listView_ports.Items.Add(portName);
             }
@@ -59,10 +59,10 @@ namespace DataAcquisition
             DataAcquisition.DataContext.Port = listView_ports.SelectedItem.ToString();
             Close();
         }
-
-        private void Window_Closed(object sender, EventArgs e)
+        
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Application.Current.MainWindow.Close();
+            DialogResult = (String.IsNullOrEmpty(DataAcquisition.DataContext.Port)) ? false : true;
         }
     }
 }
