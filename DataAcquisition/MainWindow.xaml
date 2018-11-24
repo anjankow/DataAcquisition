@@ -27,7 +27,7 @@
                 <SolidColorBrush Color="{DynamicResource Green}"/>
             </Button.Background>
         </Button>
-        <Button Name="btn_saveToCsv" Content="Zapisz do pliku CSV" HorizontalAlignment="Left" Height="42" Margin="82,436,0,0" VerticalAlignment="Top" Width="192" FontSize="14" FontFamily="Arial" Visibility="Hidden">
+        <Button Name="btn_saveToCsv" Content="Zapisz do pliku CSV" HorizontalAlignment="Left" Height="42" Margin="82,436,0,0" VerticalAlignment="Top" Width="192" FontSize="14" FontFamily="Arial" Click="Btn_saveToCsv_Click">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource GreenLighter}"/>
             </Button.Background>
