@@ -35,8 +35,25 @@ namespace DataAcquisition
             progressBar.Value = 0;
         }
 
-        private void ReceiveMesaurementsData(object sender, SerialDataReceivedEventArgs e)
+        private void ReceiveMesaurementsData(Int16[] dataDestination)
         {
+            //dataDestination is pointed to exact location in a huge array for all records
+            //that way offset doesn't have to be specified
+            int headerNumberOfBytes = serialPort.ReadChar()-'0';
+            string str_sizeOfDataInBytes = string.Empty;
+            for(int i=0;i<headerNumberOfBytes;i++)
+            {
+                str_sizeOfDataInBytes += serialPort.ReadChar();
+            }
+            int sizeOfDataInBytes = int.Parse(str_sizeOfDataInBytes);
+            var dataInBytes = new Byte[sizeOfDataInBytes];
+            serialPort.Read(dataInBytes, 0, sizeOfDataInBytes);
+            for (int i=0,j=0;i<sizeOfDataInBytes/2;i+=2,j++)
+            {
+                Int16 record = BitConverter.ToInt16(dataInBytes, i);
+                dataDestination[j] = record;
+            }
+            
             
         }
 
