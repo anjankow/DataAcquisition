@@ -51,6 +51,6 @@
             </Button.Background>
         </Button>
         <Slider Name="slid_bufferSize" HorizontalAlignment="Left" Margin="312,113,0,0" VerticalAlignment="Top" Width="206" ValueChanged="Slid_bufferSize_ValueChanged" AutoToolTipPlacement="TopLeft" Maximum="16000" Minimum="2" SmallChange="100" LargeChange="2000" TickFrequency="4000"/>
-        <Label Name="lbl_wrongBuffNum" Content="Pole musi zawierać liczbę naturalną > 0" Style="{DynamicResource ResourceKey=ValidationInfo}" HorizontalAlignment="Left" Margin="312,269,0,0" VerticalAlignment="Top" />
+        <Label Name="lbl_wrongBuffNum" Content="Pole musi zawierać liczbę naturalną w zakresie 1-100" Style="{DynamicResource ResourceKey=ValidationInfo}" HorizontalAlignment="Left" Margin="276,269,0,0" VerticalAlignment="Top" />
     </Grid>
 </Window>

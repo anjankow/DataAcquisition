@@ -46,11 +46,11 @@ namespace DataAcquisition
         {
             if(listView_ports.SelectedItem != null)
             {
-                btn_select.Visibility = Visibility.Visible;
+                btn_select.IsEnabled = true;
             }
             else
             {
-                btn_select.Visibility = Visibility.Hidden;
+                btn_select.IsEnabled = false;
             }
         }
 

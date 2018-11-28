@@ -55,7 +55,7 @@ namespace DataAcquisition
         private void Btn_OK_Click(object sender, RoutedEventArgs e)
         {
             DataAcquisition.DataContext.BufferSize = int.Parse(txtBox_bufferSize.Text);
-            DataAcquisition.DataContext.Frequency = int.Parse(txtBox_frequency.Text);
+            DataAcquisition.DataContext.Frequency = double.Parse(txtBox_frequency.Text);
             if (rbtn_1.IsChecked == true)
             {
                 DataAcquisition.DataContext.HowManyADC = 1;
@@ -99,7 +99,7 @@ namespace DataAcquisition
 
         private void TxtBox_howManyBuffers_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(int.TryParse(txtBox_howManyBuffers.Text, out int userBufferNum) && userBufferNum > 0)
+            if(int.TryParse(txtBox_howManyBuffers.Text, out int userBufferNum) && userBufferNum > 0 && userBufferNum <= 100)
             {
                 bufferNumCorrect = true;
                 lbl_wrongBuffNum.Visibility = Visibility.Hidden;
@@ -114,12 +114,12 @@ namespace DataAcquisition
 
         private void Slid_frequency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            txtBox_frequency.Text = ((int)slid_frequency.Value).ToString();
+            txtBox_frequency.Text = slid_frequency.Value.ToString("######0.00");
         }
 
         private void TxtBox_frequency_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (int.TryParse(txtBox_frequency.Text, out int userFrequency) && userFrequency <= 1000000 && userFrequency >= 1000)
+            if (double.TryParse(txtBox_frequency.Text, out double userFrequency) && userFrequency <= 1000000.0 && userFrequency >= 1000.0)
             {
                 lbl_wrongFreq.Visibility = Visibility.Hidden;
                 freqCorrect = true;

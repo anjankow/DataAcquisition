@@ -2,6 +2,7 @@
 using System.Windows;
 using System.IO.Ports;
 using Ookii.Dialogs.Wpf;
+using System.Globalization;
 
 namespace DataAcquisition
 {
@@ -26,7 +27,7 @@ namespace DataAcquisition
             }
 
             DataAcquisition.DataContext.Port = String.Empty;
-            DataAcquisition.DataContext.HowManyBuffers = 100;
+            DataAcquisition.DataContext.HowManyBuffers = 1;
             DataAcquisition.DataContext.HowManyADC = 1;
             DataAcquisition.DataContext.Frequency = 1000;
             DataAcquisition.DataContext.BufferSize = 1600;
@@ -56,6 +57,7 @@ namespace DataAcquisition
             
             
         }
+
 
         private void Receive(object sender, SerialDataReceivedEventArgs e)
         {
@@ -109,9 +111,23 @@ namespace DataAcquisition
 
         private void Btn_start_Click(object sender, RoutedEventArgs e)
         {
-            ReactIfPortNotOpen();
-            serialPort.Write("o");  //start programu w STM
-            serialPort.Write("a");
+            if(serialPort.IsOpen)
+            {
+                serialPort.WriteLine(":ACQuire :SRATe " + DataAcquisition.DataContext.Frequency.ToString("0.###E+0", CultureInfo.InvariantCulture));
+                serialPort.WriteLine(":ACQuire :POINts " + DataAcquisition.DataContext.BufferSize.ToString());
+                serialPort.WriteLine(":WAVeform :DATA?");
+                serialPort.ReadTimeout = 2000;
+
+                try
+                {
+                    string odp = serialPort.ReadLine();
+                    MessageBox.Show(odp);
+                }
+                catch(TimeoutException)
+                {
+                    MessageBox.Show("timeout");
+                }
+            }
         }
 
 
