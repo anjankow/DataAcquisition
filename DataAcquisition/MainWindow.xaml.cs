@@ -27,7 +27,7 @@ namespace DataAcquisition
             }
 
             DataAcquisition.DataContext.Port = String.Empty;
-            DataAcquisition.DataContext.HowManyBuffers = 1;
+            DataAcquisition.DataContext.Mode = DataAcquisition.DataContext.Modes.SingleShot;
             DataAcquisition.DataContext.HowManyADC = 1;
             DataAcquisition.DataContext.Frequency = 1000;
             DataAcquisition.DataContext.BufferSize = 1600;
@@ -113,9 +113,9 @@ namespace DataAcquisition
         {
             if(serialPort.IsOpen)
             {
-                serialPort.WriteLine(":ACQuire :SRATe " + DataAcquisition.DataContext.Frequency.ToString("0.###E+0", CultureInfo.InvariantCulture));
-                serialPort.WriteLine(":ACQuire :POINts " + DataAcquisition.DataContext.BufferSize.ToString());
-                serialPort.WriteLine(":WAVeform :DATA?");
+                serialPort.WriteLine("ACQuire :SRATe " + DataAcquisition.DataContext.Frequency.ToString("0.###E+0", CultureInfo.InvariantCulture));
+                serialPort.WriteLine("ACQuire :POINts " + DataAcquisition.DataContext.BufferSize.ToString());
+                serialPort.WriteLine("WAVeform :DATA?");
                 serialPort.ReadTimeout = 2000;
 
                 try

@@ -8,11 +8,11 @@ namespace DataAcquisition
 {
     public static class DataContext
     {
+        public enum Modes {SingleShot, Continuous };
         public static string Port { get; set; }
         public static int BufferSize { get; set; }
-        public static int HowManyBuffers { get; set; }
         public static double Frequency { get; set; }
         public static int HowManyADC { get; set; }
-
+        public static Modes Mode { get; set; }
     }
 }

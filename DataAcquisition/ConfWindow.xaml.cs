@@ -28,7 +28,6 @@ namespace DataAcquisition
             bufferSizeCorrect = true;
             txtBox_bufferSize.Text = DataAcquisition.DataContext.BufferSize.ToString();
             txtBox_frequency.Text = DataAcquisition.DataContext.Frequency.ToString();
-            txtBox_howManyBuffers.Text = DataAcquisition.DataContext.HowManyBuffers.ToString();
             slid_bufferSize.Value = DataAcquisition.DataContext.BufferSize;
             slid_frequency.Value = DataAcquisition.DataContext.Frequency;
             RadioButton[] rbtns = { rbtn_1, rbtn_2, rbtn_3 };
@@ -39,9 +38,10 @@ namespace DataAcquisition
                     rbtn.IsChecked = true;
                 }
             }
+            rbtn_continMeas.IsChecked = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.Continuous;
+            rbtn_singleShot.IsChecked = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot;
             lbl_wrongBufSize.Visibility = Visibility.Hidden;
             lbl_wrongFreq.Visibility = Visibility.Hidden;
-            lbl_wrongBuffNum.Visibility = Visibility.Hidden;
             btn_OK.IsEnabled = false;
             txtBox_bufferSize.TextChanged += new TextChangedEventHandler(TxtBox_bufferSize_TextChanged);
             txtBox_frequency.TextChanged += new TextChangedEventHandler(TxtBox_frequency_TextChanged);
@@ -68,7 +68,6 @@ namespace DataAcquisition
             {
                 DataAcquisition.DataContext.HowManyADC = 3;
             }
-            DataAcquisition.DataContext.HowManyBuffers = int.Parse(txtBox_howManyBuffers.Text);
             this.Close();
         }
 
@@ -96,20 +95,20 @@ namespace DataAcquisition
         {
             this.Close();
         }
+        
 
-        private void TxtBox_howManyBuffers_TextChanged(object sender, TextChangedEventArgs e)
+        private void Rbtn_continMeas_Checked(object sender, RoutedEventArgs e)
         {
-            if(int.TryParse(txtBox_howManyBuffers.Text, out int userBufferNum) && userBufferNum > 0 && userBufferNum <= 100)
-            {
-                bufferNumCorrect = true;
-                lbl_wrongBuffNum.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                bufferNumCorrect = false;
-                lbl_wrongBuffNum.Visibility = Visibility.Visible;
-            }
-            SetButtonOkState();
+            DataAcquisition.DataContext.Mode = DataAcquisition.DataContext.Modes.Continuous;
+            txtBox_bufferSize.IsEnabled = false;
+            slid_bufferSize.IsEnabled = false;
+        }
+
+        private void Rbtn_singleShot_Checked(object sender, RoutedEventArgs e)
+        {
+            DataAcquisition.DataContext.Mode = DataAcquisition.DataContext.Modes.SingleShot;
+            txtBox_bufferSize.IsEnabled = true;
+            slid_bufferSize.IsEnabled = true;
         }
 
         private void Slid_frequency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
