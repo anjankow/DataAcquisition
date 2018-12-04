@@ -20,11 +20,11 @@ namespace DataAcquisition
         {
             InitializeComponent();
 
-            if(!ChooseAndOpenPort())
-            {
-                //port choice window closed, end of program
-                this.Close();
-            }
+            //if(!ChooseAndOpenPort())
+            //{
+            //    //port choice window closed, end of program
+            //    this.Close();
+            //}
 
             DataAcquisition.DataContext.Port = String.Empty;
             DataAcquisition.DataContext.Mode = DataAcquisition.DataContext.Modes.SingleShot;
@@ -32,6 +32,9 @@ namespace DataAcquisition
             DataAcquisition.DataContext.Frequency = 1000;
             DataAcquisition.DataContext.BufferSize = 1600;
 
+            lbl_frequency.Content = DataAcquisition.DataContext.Frequency.ToString("0.###")+" Hz";
+            lbl_mode.Content = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot ?
+                "single-shot" : "ciągły";
             btn_saveToCsv.IsEnabled = false;
             progressBar.Value = 0;
         }
@@ -107,6 +110,9 @@ namespace DataAcquisition
         {
             var confWindow = new ConfWindow();
             confWindow.ShowDialog();
+            lbl_frequency.Content = DataAcquisition.DataContext.Frequency.ToString("0.###") + " Hz";
+            lbl_mode.Content = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot ?
+                "single-shot" : "ciągły";
         }
 
         private void Btn_start_Click(object sender, RoutedEventArgs e)
