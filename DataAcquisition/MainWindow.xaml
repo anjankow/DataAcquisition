@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DataAcquisition"
         mc:Ignorable="d"
-        Title="MainWindow" Height="430" Width="500">
+        Title="MainWindow" Height="520" Width="500">
     <Window.Resources>
         <Style TargetType="Label">
             <Setter Property="FontSize" Value="16"/>
@@ -26,7 +26,7 @@
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>
         </Button>
-        <ProgressBar Name="progressBar" HorizontalAlignment="Center" Height="40" Margin="0,263,0,0" VerticalAlignment="Top" Width="370" Value="80">
+        <ProgressBar Name="progressBar" HorizontalAlignment="Center" Height="40" Margin="61,263,61,0" VerticalAlignment="Top" Width="370" Value="80">
             <ProgressBar.Foreground>
                 <SolidColorBrush Color="#FF4A9739"/>
             </ProgressBar.Foreground>
@@ -36,7 +36,7 @@
                 <SolidColorBrush Color="{DynamicResource START}"/>
             </Button.Background>
         </Button>
-        <Button Name="btn_saveToCsv" Content="Zapisz do pliku CSV" HorizontalAlignment="Center" Height="37" Margin="0,333,0,0" VerticalAlignment="Top" Width="161" FontSize="14" FontFamily="Arial" Click="Btn_saveToCsv_Click">
+        <Button Name="btn_openDataFile" Content="Otwórz plik z danymi" HorizontalAlignment="Center" Height="37" Margin="166,416,166,0" VerticalAlignment="Top" Width="160" FontSize="14" FontFamily="Arial" Click="Btn_openCSVfile">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>
@@ -47,6 +47,11 @@
         <Label Content="Tryb pomiarów:" HorizontalAlignment="Left" Margin="32,100,0,0" VerticalAlignment="Top" />
         <Label Name="lbl_frequency" Content="Label" HorizontalAlignment="Left" Margin="165,53,0,0" VerticalAlignment="Top"/>
         <Label Name="lbl_mode" Content="Label" HorizontalAlignment="Left" Margin="165,100,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btn_saveDestination" Content="Wybierz lokalizację zapisu danych" HorizontalAlignment="Center" Height="37" Margin="131,348,131,0" VerticalAlignment="Top" Width="230" FontSize="14" FontFamily="Arial" Click="Btn_saveDestination_Click">
+            <Button.Background>
+                <SolidColorBrush Color="{DynamicResource LightYellow}"/>
+            </Button.Background>
+        </Button>
 
     </Grid>
 </Window>

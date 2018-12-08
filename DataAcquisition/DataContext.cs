@@ -14,5 +14,7 @@ namespace DataAcquisition
         public static double Frequency { get; set; }
         public static int HowManyADC { get; set; }
         public static Modes Mode { get; set; }
+        public static int MaxBufferSize { get; set; }
+        public static string SavePath { get; set; }
     }
 }

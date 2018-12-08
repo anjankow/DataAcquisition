@@ -78,7 +78,8 @@ namespace DataAcquisition
 
         private void TxtBox_bufferSize_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (int.TryParse(txtBox_bufferSize.Text, out int userBufferSize) && userBufferSize <= 16000 && userBufferSize >= 2)
+            if (int.TryParse(txtBox_bufferSize.Text, out int userBufferSize) && 
+                userBufferSize <= DataAcquisition.DataContext.MaxBufferSize && userBufferSize >= 2)
             {
                 lbl_wrongBufSize.Visibility = Visibility.Hidden;
                 bufferSizeCorrect = true;
