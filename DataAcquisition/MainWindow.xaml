@@ -13,6 +13,8 @@
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="Foreground" Value="#FFCFCB80" />
         </Style>
+        <SolidColorBrush  x:Key="BtnStop" Color="#FFD3746B" />
+        <SolidColorBrush  x:Key="BtnStart" Color="#FFA4E6AA" />
     </Window.Resources>
     <Grid>
         <Grid.Background>
@@ -33,11 +35,7 @@
                 <SolidColorBrush Color="#FF4A9739"/>
             </ProgressBar.Foreground>
         </ProgressBar>
-        <Button Name="btn_start" Content="START POMIARÓW" HorizontalAlignment="Center" Height="48" Margin="0,189,0,0" VerticalAlignment="Top" Width="170" FontSize="14" FontFamily="Arial" Click="Btn_start_Click">
-            <Button.Background>
-                <SolidColorBrush Color="#FFA4E6AA"/>
-            </Button.Background>
-        </Button>
+        <Button Name="btn_start" Content="START POMIARÓW" HorizontalAlignment="Center" Height="48" Margin="0,189,0,0" VerticalAlignment="Top" Width="170" FontSize="14" FontFamily="Arial" Click="StartMeasurements" Background="{DynamicResource BtnStart}"/>
         <Button Name="btn_showFiles" Content="Pokaż pliki z danymi" HorizontalAlignment="Center" Height="37" Margin="0,397,0,0" VerticalAlignment="Top" Width="160" FontSize="14" FontFamily="Arial" Click="Btn_showFiles_Click">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>

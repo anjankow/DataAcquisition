@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Controls;
 using Microsoft.Win32;
+using System.Windows.Media;
 
 namespace DataAcquisition
 {
@@ -161,10 +162,14 @@ namespace DataAcquisition
                 "single-shot" : "ciągły";
         }
 
-        private void Btn_start_Click(object sender, RoutedEventArgs e)
+
+
+        private void StartMeasurements(object sender, RoutedEventArgs e)
         {
             if (serialPort.IsOpen)
             {
+                isStopped = false;
+                ChangeToStop();
                 CreateDataFiles();
                 serialPort.WriteLine("ACQuire:SRATe " + DataAcquisition.DataContext.Frequency.ToString("0.###"));
                 serialPort.WriteLine("ACQuire:POINts " + DataAcquisition.DataContext.BufferSize.ToString());
@@ -181,10 +186,37 @@ namespace DataAcquisition
                 {
                     serialPort.WriteLine("DIG");
                 }
-                
+
                 Thread receiveDataThread = new Thread(ReceiveDataLoop);
                 receiveDataThread.Start();
             }
+            else
+            {
+                MessageBox.Show("Port nie jest otwarty! Wybierz port jeszcze raz", "Port nieotwarty", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+            }
+
+        }
+
+        private void StopMeasurements(object sender, RoutedEventArgs e)
+        {
+            isStopped = true;
+            ChangeToStart();
+        }
+
+        private void ChangeToStop()
+        {
+            btn_start.Content = "STOP";
+            btn_start.Background = Resources["BtnStop"] as SolidColorBrush;
+            btn_start.Click -= StartMeasurements;
+            btn_start.Click += StopMeasurements;
+        } 
+
+        private void ChangeToStart()
+        {
+            btn_start.Content = "START";
+            btn_start.Background = Resources["BtnStart"] as SolidColorBrush;
+            btn_start.Click += StartMeasurements;
+            btn_start.Click -= StopMeasurements;
         }
 
         private void CreateDataFiles()

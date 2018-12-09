@@ -11,7 +11,7 @@
         <Color x:Key="GreenLighter">#FFD0FFD9</Color>
         <Color x:Key="Green">#FFACE4B7</Color>
         <Color x:Key="LightRed">#FFD3746B</Color>
-        <Color x:Key="STOP">#FFD3746B</Color>
+        
         <Color x:Key="NotImportantButton">#FFDEDEDE</Color>
 
         <Style TargetType="Button" x:Key="NotImportantBtnStyle">
@@ -20,7 +20,7 @@
             <Setter Property="Background" Value="#FFDEDEDE"/>
         </Style>
         <Color x:Key="ButtonOKcolor">#FFF2F77A</Color>
-        <Color x:Key="START">#FFC1ECE4</Color>
-
+        
+       <!-- <Color x:Key="BtnStop">#FFD3746B</Color> -->
     </Application.Resources>
 </Application>
