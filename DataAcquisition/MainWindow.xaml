@@ -16,7 +16,7 @@
         <Grid.Background>
             <SolidColorBrush Color="#FF04321D"/>
         </Grid.Background>
-        <Button Name="btn_changePort" Content="Wybór portu" HorizontalAlignment="Left" Height="42" Margin="322,37,0,0" VerticalAlignment="Top" Width="120" FontSize="14" FontFamily="Arial" Click="Btn_changePort_Click">
+        <Button Name="btn_changePort" Content="Wybór portu" HorizontalAlignment="Left" Height="42" Margin="322,49,0,0" VerticalAlignment="Top" Width="120" FontSize="14" FontFamily="Arial" Click="Btn_changePort_Click">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>
@@ -26,17 +26,17 @@
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>
         </Button>
-        <ProgressBar Name="progressBar" HorizontalAlignment="Center" Height="40" Margin="61,263,61,0" VerticalAlignment="Top" Width="370" Value="80">
+        <ProgressBar Name="progressBar" HorizontalAlignment="Center" Height="23" Margin="0,265,0,0" VerticalAlignment="Top" Width="370" Value="0" IsIndeterminate="True">
             <ProgressBar.Foreground>
                 <SolidColorBrush Color="#FF4A9739"/>
             </ProgressBar.Foreground>
         </ProgressBar>
-        <Button Name="btn_start" Content="START POMIARÓW" HorizontalAlignment="Center" Height="48" Margin="0,186,0,0" VerticalAlignment="Top" Width="170" FontSize="14" FontFamily="Arial" Click="Btn_start_Click">
+        <Button Name="btn_start" Content="START POMIARÓW" HorizontalAlignment="Center" Height="48" Margin="0,189,0,0" VerticalAlignment="Top" Width="170" FontSize="14" FontFamily="Arial" Click="Btn_start_Click">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource START}"/>
             </Button.Background>
         </Button>
-        <Button Name="btn_openDataFile" Content="Otwórz plik z danymi" HorizontalAlignment="Center" Height="37" Margin="166,416,166,0" VerticalAlignment="Top" Width="160" FontSize="14" FontFamily="Arial" Click="Btn_openCSVfile">
+        <Button Name="btn_showFiles" Content="Pokaż pliki z danymi" HorizontalAlignment="Center" Height="37" Margin="0,397,0,0" VerticalAlignment="Top" Width="160" FontSize="14" FontFamily="Arial" Click="Btn_showFiles_Click">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>
@@ -47,7 +47,7 @@
         <Label Content="Tryb pomiarów:" HorizontalAlignment="Left" Margin="32,100,0,0" VerticalAlignment="Top" />
         <Label Name="lbl_frequency" Content="Label" HorizontalAlignment="Left" Margin="165,53,0,0" VerticalAlignment="Top"/>
         <Label Name="lbl_mode" Content="Label" HorizontalAlignment="Left" Margin="165,100,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btn_saveDestination" Content="Wybierz lokalizację zapisu danych" HorizontalAlignment="Center" Height="37" Margin="131,348,131,0" VerticalAlignment="Top" Width="230" FontSize="14" FontFamily="Arial" Click="Btn_saveDestination_Click">
+        <Button x:Name="btn_saveDestination" Content="Wybierz lokalizację zapisu danych" HorizontalAlignment="Center" Height="37" Margin="0,343,0,0" VerticalAlignment="Top" Width="230" FontSize="14" FontFamily="Arial" Click="Btn_saveDestination_Click">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>

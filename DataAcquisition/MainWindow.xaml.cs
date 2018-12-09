@@ -48,8 +48,8 @@ namespace DataAcquisition
             lbl_frequency.Content = DataAcquisition.DataContext.Frequency.ToString("0.###") + " Hz";
             lbl_mode.Content = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot ?
                 "single-shot" : "ciągły";
-            btn_openDataFile.IsEnabled = false;
-            progressBar.Value = 0;
+            btn_showFiles.IsEnabled = false;
+            progressBar.IsIndeterminate = false;
         }
 
         private bool ReceiveDataBlock()
@@ -179,6 +179,7 @@ namespace DataAcquisition
                 {
                     serialPort.WriteLine("DIG");
                 }
+                
                 Thread receiveDataThread = new Thread(ReceiveDataLoop);
                 receiveDataThread.Start();
             }
@@ -226,6 +227,7 @@ namespace DataAcquisition
 
         private void ReceiveDataLoop()
         {
+            progressBar.IsIndeterminate = true;
             serialPort.ReadTimeout = readTimeout;
             Thread saveToFileThread = new Thread(SaveToCSV);
             while (true)
@@ -277,6 +279,7 @@ namespace DataAcquisition
                 }
 
             }
+            progressBar.IsIndeterminate = false;
         }
 
         private void SaveToCSV()
@@ -320,10 +323,6 @@ namespace DataAcquisition
             }
         }
         
-        private void Btn_openCSVfile(object sender, RoutedEventArgs e)
-        {
-
-        }
 
         private void Btn_saveDestination_Click(object sender, RoutedEventArgs e)
         {
@@ -337,6 +336,11 @@ namespace DataAcquisition
             {
                 DataAcquisition.DataContext.SavePath = dlg.SelectedPath;
             }
+        }
+
+        private void Btn_showFiles_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
     
