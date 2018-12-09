@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DataAcquisition"
         mc:Ignorable="d"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterOwner"
         Title="MainWindow" Height="520" Width="500">
     <Window.Resources>
         <Style TargetType="Label">
@@ -33,7 +35,7 @@
         </ProgressBar>
         <Button Name="btn_start" Content="START POMIARÓW" HorizontalAlignment="Center" Height="48" Margin="0,189,0,0" VerticalAlignment="Top" Width="170" FontSize="14" FontFamily="Arial" Click="Btn_start_Click">
             <Button.Background>
-                <SolidColorBrush Color="{DynamicResource START}"/>
+                <SolidColorBrush Color="#FFA4E6AA"/>
             </Button.Background>
         </Button>
         <Button Name="btn_showFiles" Content="Pokaż pliki z danymi" HorizontalAlignment="Center" Height="37" Margin="0,397,0,0" VerticalAlignment="Top" Width="160" FontSize="14" FontFamily="Arial" Click="Btn_showFiles_Click">
@@ -45,8 +47,8 @@
         <Label Content="Częstotliwość:" HorizontalAlignment="Left" Margin="32,53,0,0" VerticalAlignment="Top">
         </Label>
         <Label Content="Tryb pomiarów:" HorizontalAlignment="Left" Margin="32,100,0,0" VerticalAlignment="Top" />
-        <Label Name="lbl_frequency" Content="Label" HorizontalAlignment="Left" Margin="165,53,0,0" VerticalAlignment="Top"/>
-        <Label Name="lbl_mode" Content="Label" HorizontalAlignment="Left" Margin="165,100,0,0" VerticalAlignment="Top"/>
+        <Label Name="lbl_frequency" Content="Label" HorizontalAlignment="Left" Margin="165,53,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Label Name="lbl_mode" Content="Label" HorizontalAlignment="Left" Margin="165,100,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
         <Button x:Name="btn_saveDestination" Content="Wybierz lokalizację zapisu danych" HorizontalAlignment="Center" Height="37" Margin="0,343,0,0" VerticalAlignment="Top" Width="230" FontSize="14" FontFamily="Arial" Click="Btn_saveDestination_Click">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>

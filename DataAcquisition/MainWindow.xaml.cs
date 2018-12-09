@@ -5,6 +5,8 @@ using Ookii.Dialogs.Wpf;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Threading;
+using System.Windows.Controls;
+using Microsoft.Win32;
 
 namespace DataAcquisition
 {
@@ -340,7 +342,11 @@ namespace DataAcquisition
 
         private void Btn_showFiles_Click(object sender, RoutedEventArgs e)
         {
-
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo.UseShellExecute = true;
+            process.StartInfo.FileName = "explorer";
+            process.StartInfo.Arguments = DataAcquisition.DataContext.SavePath;
+            process.Start();
         }
     }
     
