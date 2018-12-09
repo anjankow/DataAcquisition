@@ -4,6 +4,7 @@ using System.IO.Ports;
 using Ookii.Dialogs.Wpf;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace DataAcquisition
 {
@@ -17,6 +18,10 @@ namespace DataAcquisition
         public Int16[] ADC2_rawData;
         public Int16[] ADC3_rawData;
         public volatile bool isStopped;
+
+        public int readTimeout = 2000;
+        public string[] fileName;
+
 
         public MainWindow()
         {
@@ -63,8 +68,7 @@ namespace DataAcquisition
             }
             catch(Exception e)
             {
-                MessageBox.Show(e.Message, "Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
+                throw new Exception("exception in ReceiveData function: " + e.Message);
             }
 
             
@@ -95,7 +99,7 @@ namespace DataAcquisition
                         ADC3_rawData[j] = record;
                         break;
                     default:
-                        throw new ArgumentException();
+                        break;
                 }
             }
             return true;
@@ -159,7 +163,7 @@ namespace DataAcquisition
         {
             if (serialPort.IsOpen)
             {
-                CreateDataFiles(out string [] fileNames);
+                CreateDataFiles();
                 serialPort.WriteLine("ACQuire:SRATe " + DataAcquisition.DataContext.Frequency.ToString("0.###"));
                 serialPort.WriteLine("ACQuire:POINts " + DataAcquisition.DataContext.BufferSize.ToString());
                 for (int i = 1; i <= DataAcquisition.DataContext.HowManyADC; i++)
@@ -175,12 +179,12 @@ namespace DataAcquisition
                 {
                     serialPort.WriteLine("DIG");
                 }
-
-                ReceiveDataLoop(fileNames);
+                Thread receiveDataThread = new Thread(ReceiveDataLoop);
+                receiveDataThread.Start();
             }
         }
 
-        private void CreateDataFiles(out string[] fileName)
+        private void CreateDataFiles()
         {
             string dateTimeNow = DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + "_" + String.Format("{0:D2}", DateTime.Now.Hour) + " -" + String.Format("{0:D2}", DateTime.Now.Minute);
             fileName = new string[3];
@@ -220,9 +224,10 @@ namespace DataAcquisition
         }
         
 
-        private void ReceiveDataLoop(string[] fileNames)
+        private void ReceiveDataLoop()
         {
-            serialPort.ReadTimeout = 2000;
+            serialPort.ReadTimeout = readTimeout;
+            Thread saveToFileThread = new Thread(SaveToCSV);
             while (true)
             {
                 serialPort.WriteLine("WAVeform:COMP?");
@@ -233,15 +238,21 @@ namespace DataAcquisition
                     if (isReady == "YES")
                     {
                         serialPort.WriteLine("WAVeform:DATA?");
-                    }
-                    if(ReceiveDataBlock())
-                    {
-                        SaveToCSV(fileNames);
-                    }
-                    if (isStopped || DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot)
-                    {
-                        //if (a user pressed "STOP" button  and mode is continuous) or (mode is single shot) -> break while loop
-                        break;
+                        if (ReceiveDataBlock())
+                        {
+                            if(saveToFileThread.ThreadState==ThreadState.Running)
+                            {
+                                throw new Exception("Saving previous data to a file is not finished");
+                            }
+                            else
+                            {
+                                saveToFileThread.Start();
+                            }
+                        }
+                        if (DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot)
+                        {
+                            break;
+                        }
                     }
                 }
                 catch (InvalidOperationException ex1)
@@ -254,13 +265,49 @@ namespace DataAcquisition
                     MessageBox.Show(ex2.Message, "Timeout Exception", MessageBoxButton.OK, MessageBoxImage.Error);
                     continue;
                 }
+                catch(Exception ex3)
+                {
+                    MessageBox.Show(ex3.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                if (isStopped)
+                {
+                    //if a user pressed "STOP" button
+                    break;
+                }
 
             }
         }
 
-        private void SaveToCSV(string[] fileNames)
+        private void SaveToCSV()
         {
-            
+            switch (DataAcquisition.DataContext.HowManyADC)
+            {
+                case 3:
+                    using (var streamWriter = new System.IO.StreamWriter(fileName[2], true))
+                    {
+                        var csvWriter = new CsvHelper.CsvWriter(streamWriter);
+                        csvWriter.WriteRecords(ADC3_rawData);
+                    }
+                    goto case 2;
+                case 2:
+                    using (var streamWriter = new System.IO.StreamWriter(fileName[1], true))
+                    {
+                        var csvWriter = new CsvHelper.CsvWriter(streamWriter);
+                        csvWriter.WriteRecords(ADC2_rawData);
+                    }
+                    goto case 1;
+                case 1:
+                    using (var streamWriter = new System.IO.StreamWriter(fileName[0], true))
+                    {
+                        var csvWriter = new CsvHelper.CsvWriter(streamWriter);
+                        csvWriter.WriteRecords(ADC1_rawData);
+                    }
+                    break;
+                default:
+                    break;
+
+            }
         }
 
         private void ReactIfPortNotOpen()
@@ -281,8 +328,11 @@ namespace DataAcquisition
         private void Btn_saveDestination_Click(object sender, RoutedEventArgs e)
         {
             var saveDialog = new Microsoft.Win32.SaveFileDialog();
-            VistaFolderBrowserDialog dlg = new VistaFolderBrowserDialog();
-            dlg.ShowNewFolderButton = true;
+            VistaFolderBrowserDialog dlg = new VistaFolderBrowserDialog
+            {
+                ShowNewFolderButton = true,
+                SelectedPath = DataAcquisition.DataContext.SavePath
+            };
             if (dlg.ShowDialog()==true)
             {
                 DataAcquisition.DataContext.SavePath = dlg.SelectedPath;
