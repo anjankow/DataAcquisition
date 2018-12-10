@@ -25,7 +25,6 @@ namespace DataAcquisition
         public int readTimeout = 2000;
         public string[] fileName;
 
-
         public MainWindow()
         {
             InitializeComponent();
@@ -42,7 +41,7 @@ namespace DataAcquisition
             DataAcquisition.DataContext.Frequency = 1000;
             DataAcquisition.DataContext.BufferSize = 1600;
             DataAcquisition.DataContext.MaxBufferSize = 16000;
-            DataAcquisition.DataContext.SavePath=".";
+            DataAcquisition.DataContext.SavePath=String.Empty;
 
             ADC1_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
             ADC2_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
@@ -53,6 +52,7 @@ namespace DataAcquisition
                 "single-shot" : "ciągły";
             btn_showFiles.IsEnabled = false;
             progressBar.IsIndeterminate = false;
+            
         }
 
         private bool ReceiveDataBlock()
@@ -166,6 +166,8 @@ namespace DataAcquisition
 
         private void StartMeasurements(object sender, RoutedEventArgs e)
         {
+            ChangeToStop();
+            progressBar.IsIndeterminate = true;
             if (serialPort.IsOpen)
             {
                 isStopped = false;
@@ -194,7 +196,7 @@ namespace DataAcquisition
             {
                 MessageBox.Show("Port nie jest otwarty! Wybierz port jeszcze raz", "Port nieotwarty", MessageBoxButton.OK, MessageBoxImage.Asterisk);
             }
-
+            
         }
 
         private void StopMeasurements(object sender, RoutedEventArgs e)
@@ -205,10 +207,15 @@ namespace DataAcquisition
 
         private void ChangeToStop()
         {
+            
             btn_start.Content = "STOP";
             btn_start.Background = Resources["BtnStop"] as SolidColorBrush;
             btn_start.Click -= StartMeasurements;
             btn_start.Click += StopMeasurements;
+            btn_showFiles.IsEnabled = false;
+            btn_saveDestination.IsEnabled = false;
+            btn_configure.IsEnabled = false;
+            btn_changePort.IsEnabled = false;
         } 
 
         private void ChangeToStart()
@@ -217,6 +224,10 @@ namespace DataAcquisition
             btn_start.Background = Resources["BtnStart"] as SolidColorBrush;
             btn_start.Click += StartMeasurements;
             btn_start.Click -= StopMeasurements;
+            btn_showFiles.IsEnabled = true;
+            btn_saveDestination.IsEnabled = true;
+            btn_configure.IsEnabled = true;
+            btn_changePort.IsEnabled = true;
         }
 
         private void CreateDataFiles()
