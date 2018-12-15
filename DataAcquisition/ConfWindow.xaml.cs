@@ -20,6 +20,7 @@ namespace DataAcquisition
     public partial class ConfWindow : Window
     {
         private bool freqCorrect, bufferSizeCorrect, bufferNumCorrect;
+
         public ConfWindow()
         {
             InitializeComponent();
@@ -79,7 +80,7 @@ namespace DataAcquisition
         private void TxtBox_bufferSize_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (int.TryParse(txtBox_bufferSize.Text, out int userBufferSize) && 
-                userBufferSize <= DataAcquisition.DataContext.MaxBufferSize && userBufferSize >= 2)
+                userBufferSize <= DataAcquisition.DataContext.MaxBufferSize && userBufferSize >= DataAcquisition.DataContext.MinBufferSize)
             {
                 lbl_wrongBufSize.Visibility = Visibility.Hidden;
                 bufferSizeCorrect = true;
@@ -119,7 +120,7 @@ namespace DataAcquisition
 
         private void TxtBox_frequency_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (double.TryParse(txtBox_frequency.Text, out double userFrequency) && userFrequency <= 1000000.0 && userFrequency >= 1000.0)
+            if (double.TryParse(txtBox_frequency.Text, out double userFrequency) && userFrequency <= DataAcquisition.DataContext.MaxFrequency && userFrequency >= DataAcquisition.DataContext.MinFrequency)
             {
                 lbl_wrongFreq.Visibility = Visibility.Hidden;
                 freqCorrect = true;

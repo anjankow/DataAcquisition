@@ -29,7 +29,7 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <Label Name="lbl_wrongFreq" Content="Liczba musi być w przedziale 0,1 - 1 000 000" Style="{DynamicResource Normal}" HorizontalAlignment="Left" Margin="21,279,0,0" VerticalAlignment="Top" FontSize="12" Foreground="#FFFF821A"/>
+        <Label Name="lbl_wrongFreq" Content="Liczba musi być w przedziale 0,5 - 1 000 000" Style="{DynamicResource Normal}" HorizontalAlignment="Left" Margin="21,279,0,0" VerticalAlignment="Top" FontSize="12" Foreground="#FFFF821A"/>
         <Label Name="lbl_wrongBufSize" Content="Liczba musi być w przedziale 1 - 16 000" Style="{DynamicResource ValidationInfo}" HorizontalAlignment="Left" Margin="324,279,0,0" VerticalAlignment="Top" />
         <Label Content="Częstotliwość próbkowania" Style="{DynamicResource Normal}" HorizontalAlignment="Left" Margin="45,168,0,0" VerticalAlignment="Top"/>
         <Label Content="Tryb pomiarów" Style="{DynamicResource Normal}" HorizontalAlignment="Left" Margin="56,29,0,0" VerticalAlignment="Top"/>
@@ -41,14 +41,14 @@
         <TextBox Name="txtBox_frequency" HorizontalAlignment="Left" Height="23" Margin="99,218,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="94" />
         <Label Content="Hz" HorizontalAlignment="Left" Style="{DynamicResource Normal}" Margin="198,210,0,0" VerticalAlignment="Top"/>
         <TextBox Name="txtBox_bufferSize" HorizontalAlignment="Left" Height="23" Margin="386,218,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="94"/>
-        <Slider Name="slid_frequency" HorizontalAlignment="Left" Margin="43,256,0,0" VerticalAlignment="Top" Width="206" RenderTransformOrigin="0.5,0.5" ValueChanged="Slid_frequency_ValueChanged" AutoToolTipPlacement="TopLeft" Minimum="1000" Maximum="1000000" SmallChange="1000" TickFrequency="10000" LargeChange="100000" Value="1000"/>
+        <Slider Name="slid_frequency" HorizontalAlignment="Left" Margin="43,256,0,0" VerticalAlignment="Top" Width="206" ValueChanged="Slid_frequency_ValueChanged" AutoToolTipPlacement="TopLeft" Minimum="0.5" Maximum="1000000" SmallChange="0.5" TickFrequency="10000" LargeChange="100000" Value="1000"/>
         <Button Name="btn_cancel" Content="Anuluj" HorizontalAlignment="Left" Margin="157,331,0,0" VerticalAlignment="Top" Style="{DynamicResource NotImportantBtnStyle}" Click="Btn_cancel_Click"/>
         <Button Name="btn_OK" Content="OK" IsEnabled="False" HorizontalAlignment="Right" Margin="0,331,198,0" VerticalAlignment="Top" Style="{DynamicResource NotImportantBtnStyle}" Click="Btn_OK_Click">
             <Button.Background>
                 <SolidColorBrush Color="{DynamicResource LightYellow}"/>
             </Button.Background>
         </Button>
-        <Slider Name="slid_bufferSize" HorizontalAlignment="Left" Margin="330,256,0,0" VerticalAlignment="Top" Width="206" ValueChanged="Slid_bufferSize_ValueChanged" AutoToolTipPlacement="TopLeft" Maximum="16000" Minimum="2" SmallChange="100" LargeChange="2000" TickFrequency="4000"/>
+        <Slider Name="slid_bufferSize" HorizontalAlignment="Left" Margin="330,256,0,0" VerticalAlignment="Top" Width="206" ValueChanged="Slid_bufferSize_ValueChanged" AutoToolTipPlacement="TopLeft" Maximum="16000" Minimum="1" SmallChange="100" LargeChange="2000" TickFrequency="4000"/>
         <RadioButton Name="rbtn_continMeas" Content="pomiary ciągłe" HorizontalAlignment="Left" Margin="61,78,0,0" VerticalAlignment="Top" Checked="Rbtn_continMeas_Checked"/>
         <RadioButton Name="rbtn_singleShot" Content="single-shot" HorizontalAlignment="Left" Margin="61,116,0,0" VerticalAlignment="Top" Checked="Rbtn_singleShot_Checked"/>
     </Grid>

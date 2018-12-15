@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DataAcquisition"
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
-        WindowStartupLocation="CenterOwner"
+        WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="520" Width="500">
     <Window.Resources>
         <Style TargetType="Label">

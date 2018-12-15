@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows.Controls;
 using Microsoft.Win32;
 using System.Windows.Media;
+using System.Diagnostics;
 
 namespace DataAcquisition
 {
@@ -25,22 +26,22 @@ namespace DataAcquisition
         public int readTimeout = 2000;
         public string[] fileName;
 
+        Thread receiveDataThread;
         public MainWindow()
         {
             InitializeComponent();
 
-            //if(!ChooseAndOpenPort())
-            //{
-            //    //port choice window closed, end of program
-            //    this.Close();
-            //}
+            if (!ChooseAndOpenPort())
+            {
+                //port choice window closed, end of program
+                this.Close();
+            }
 
             DataAcquisition.DataContext.Port = String.Empty;
             DataAcquisition.DataContext.Mode = DataAcquisition.DataContext.Modes.SingleShot;
             DataAcquisition.DataContext.HowManyADC = 1;
             DataAcquisition.DataContext.Frequency = 1000;
             DataAcquisition.DataContext.BufferSize = 1600;
-            DataAcquisition.DataContext.MaxBufferSize = 16000;
             DataAcquisition.DataContext.SavePath=String.Empty;
 
             ADC1_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
@@ -52,16 +53,27 @@ namespace DataAcquisition
                 "single-shot" : "ciągły";
             btn_showFiles.IsEnabled = false;
             progressBar.IsIndeterminate = false;
-            
+
+            receiveDataThread = new Thread(ReceiveDataLoop);
+            //btn_start.Click -= StartMeasurements;
+            //btn_start.Click += WyslijChar;
+        }
+
+        private void WyslijChar(object sender, RoutedEventArgs e)
+        {
+            serialPort.WriteLine("abecadlo");
+            serialPort.ReadTimeout = 1000;
+            Debug.WriteLine(serialPort.ReadExisting());
         }
 
         private bool ReceiveDataBlock()
         {
+            while (serialPort.ReadChar() != '#') ;
             int headerNumberOfBytes = serialPort.ReadChar() - '0';
             string str_sizeOfDataInBytes = string.Empty;
-            for (int i = 0; i < headerNumberOfBytes; i++)
+            for (int nr = 0; nr < headerNumberOfBytes; nr++)
             {
-                str_sizeOfDataInBytes += serialPort.ReadChar();
+                str_sizeOfDataInBytes += serialPort.ReadChar() - '0';
             }
             int sizeOfDataInBytes = int.Parse(str_sizeOfDataInBytes);
             var dataInBytes = new Byte[sizeOfDataInBytes];
@@ -74,50 +86,37 @@ namespace DataAcquisition
                 throw new Exception("exception in ReceiveData function: " + e.Message);
             }
 
-            
-            for(int i = 0, j = 0; i < sizeOfDataInBytes / 2; i += 2, j++)
+            Int16 record;
+            int i, j;
+            int sizeOfOnePart = sizeOfDataInBytes / DataAcquisition.DataContext.HowManyADC;
+            for (i = 0, j = 0; i < sizeOfOnePart && j < DataAcquisition.DataContext.MaxBufferSize; i += 2, j++)
             {
-                Int16 record;
-                switch(DataAcquisition.DataContext.HowManyADC)
+                record = BitConverter.ToInt16(dataInBytes, i);
+                ADC1_rawData[j] = record;
+            }
+            if (DataAcquisition.DataContext.HowManyADC > 1)
+            {
+                for (j = 0; i < 2*sizeOfOnePart && j < DataAcquisition.DataContext.MaxBufferSize; i += 2, j++)
                 {
-                    case 1:
-                        record = BitConverter.ToInt16(dataInBytes, i);
-                        ADC1_rawData[j] = record;
-                        break;
-                    case 2:
-                        record = BitConverter.ToInt16(dataInBytes, i);
-                        ADC1_rawData[j] = record;
-                        i += 2;
-                        record = BitConverter.ToInt16(dataInBytes, i);
-                        ADC2_rawData[j] = record;
-                        break;
-                    case 3:
-                        record = BitConverter.ToInt16(dataInBytes, i);
-                        ADC1_rawData[j] = record;
-                        i += 2;
-                        record = BitConverter.ToInt16(dataInBytes, i);
-                        ADC2_rawData[j] = record;
-                        i += 2;
-                        record = BitConverter.ToInt16(dataInBytes, i);
-                        ADC3_rawData[j] = record;
-                        break;
-                    default:
-                        break;
+                    record = BitConverter.ToInt16(dataInBytes, i);
+                    ADC2_rawData[j] = record;
                 }
             }
+            if (DataAcquisition.DataContext.HowManyADC == 3)
+            {
+                for (j = 0; i < sizeOfDataInBytes && j < DataAcquisition.DataContext.MaxBufferSize; i += 2, j++)
+                {
+                    record = BitConverter.ToInt16(dataInBytes, i);
+                    ADC3_rawData[j] = record;
+                }
+            }
+            
             return true;
         }
-
-
-        private void Receive(object sender, SerialDataReceivedEventArgs e)
-        {
-            char data = (char)serialPort.ReadChar();
-            MessageBox.Show(": " + data);
-        }
-
+        
         private void ErrorHandler(object sender, SerialErrorReceivedEventArgs e)
         {
-            throw new NotImplementedException();
+            MessageBox.Show(e.EventType.ToString(), "Connection error", MessageBoxButton.OK, MessageBoxImage.Asterisk);
         }
 
         private bool ChooseAndOpenPort()
@@ -136,14 +135,20 @@ namespace DataAcquisition
             }
             lbl_portName.Content = "PORT " + DataAcquisition.DataContext.Port;
             serialPort = new SerialPort(DataAcquisition.DataContext.Port, 9600, Parity.None, 8, StopBits.One);
-            serialPort.Open();
-            if (!serialPort.IsOpen)
+            try
+            {
+                serialPort.Open();
+                if (!serialPort.IsOpen)
+                {
+                    throw new Exception();
+                }
+            }
+            catch(Exception)
             {
                 MessageBox.Show("Port nie został otworzony! Wybierz port jeszcze raz", "Błąd portu",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 ChooseAndOpenPort();
             }
-            serialPort.DataReceived += new SerialDataReceivedEventHandler(Receive);
             serialPort.ErrorReceived += new SerialErrorReceivedEventHandler(ErrorHandler);
             return true;
         }
@@ -166,18 +171,32 @@ namespace DataAcquisition
 
         private void StartMeasurements(object sender, RoutedEventArgs e)
         {
-            ChangeToStop();
-            progressBar.IsIndeterminate = true;
+            
+            
             if (serialPort.IsOpen)
             {
-                isStopped = false;
+
                 ChangeToStop();
+                isStopped = false;
                 CreateDataFiles();
-                serialPort.WriteLine("ACQuire:SRATe " + DataAcquisition.DataContext.Frequency.ToString("0.###"));
-                serialPort.WriteLine("ACQuire:POINts " + DataAcquisition.DataContext.BufferSize.ToString());
-                for (int i = 1; i <= DataAcquisition.DataContext.HowManyADC; i++)
+
+                serialPort.DiscardOutBuffer();
+                serialPort.DiscardInBuffer();
+
+                serialPort.WriteLine("ACQ:SRAT " + DataAcquisition.DataContext.Frequency.ToString("0.###"));
+                serialPort.WriteLine("ACQ:POIN " + DataAcquisition.DataContext.BufferSize.ToString());
+
+                switch (DataAcquisition.DataContext.HowManyADC)
                 {
-                    serialPort.WriteLine("ROUT:ENAB 1,(@10" + i + ")");
+                    case 1:
+                        serialPort.WriteLine("ROUT:ENAB 1");
+                        break;
+                    case 2:
+                        serialPort.WriteLine("ROUT:ENAB 2");
+                        break;
+                    case 3:
+                        serialPort.WriteLine("ROUT:ENAB 3");
+                        break;
                 }
 
                 if (DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.Continuous)
@@ -203,6 +222,11 @@ namespace DataAcquisition
         {
             isStopped = true;
             ChangeToStart();
+            if(receiveDataThread.IsAlive)
+            {
+                receiveDataThread.Join();
+            }
+            
         }
 
         private void ChangeToStop()
@@ -216,6 +240,7 @@ namespace DataAcquisition
             btn_saveDestination.IsEnabled = false;
             btn_configure.IsEnabled = false;
             btn_changePort.IsEnabled = false;
+            progressBar.IsIndeterminate = true;
         } 
 
         private void ChangeToStart()
@@ -228,6 +253,7 @@ namespace DataAcquisition
             btn_saveDestination.IsEnabled = true;
             btn_configure.IsEnabled = true;
             btn_changePort.IsEnabled = true;
+            progressBar.IsIndeterminate = false;
         }
 
         private void CreateDataFiles()
@@ -266,28 +292,27 @@ namespace DataAcquisition
             
             }
             
-            MessageBox.Show("Przygotowano pliki", "Pliki przygotowane", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         
 
         private void ReceiveDataLoop()
         {
-            progressBar.IsIndeterminate = true;
+            
             serialPort.ReadTimeout = readTimeout;
+            string isReady;
             Thread saveToFileThread = new Thread(SaveToCSV);
             while (true)
             {
-                serialPort.WriteLine("WAVeform:COMP?");
-                string isReady;
+                serialPort.WriteLine("WAV:COMP?");
                 try
                 {
-                    isReady = serialPort.ReadLine();
-                    if (isReady == "YES")
+                    while ((isReady = serialPort.ReadExisting()) == String.Empty) ;
+                    if (isReady == "YES\n")
                     {
-                        serialPort.WriteLine("WAVeform:DATA?");
+                        serialPort.WriteLine("WAV:DATA?");
                         if (ReceiveDataBlock())
                         {
-                            if(saveToFileThread.ThreadState==ThreadState.Running)
+                            if(saveToFileThread.ThreadState== System.Threading.ThreadState.Running)
                             {
                                 throw new Exception("Saving previous data to a file is not finished");
                             }
@@ -320,11 +345,13 @@ namespace DataAcquisition
                 if (isStopped)
                 {
                     //if a user pressed "STOP" button
+                    serialPort.WriteLine("STOP");
                     break;
                 }
 
             }
-            progressBar.IsIndeterminate = false;
+
+            ChangeToStart();
         }
 
         private void SaveToCSV()
