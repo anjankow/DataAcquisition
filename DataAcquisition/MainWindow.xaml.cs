@@ -27,6 +27,41 @@ namespace DataAcquisition
         public string[] fileName;
 
         Thread receiveDataThread;
+
+        public event EventHandler MeasurementsStart;
+        public event EventHandler MeasurementsStop;
+
+        protected void OnMeasurementsStart(object sender, EventArgs e)
+        {
+            btn_start.Content = "STOP";
+            btn_start.Background = Resources["BtnStop"] as SolidColorBrush;
+            btn_start.Click -= StartMeasurements;
+            btn_start.Click += StopMeasurements;
+            btn_showFiles.IsEnabled = false;
+            btn_saveDestination.IsEnabled = false;
+            btn_configure.IsEnabled = false;
+            btn_changePort.IsEnabled = false;
+            progressBar.IsIndeterminate = true;
+        }
+
+        protected void OnMeasurementsStop(object sender, EventArgs e)
+        {
+            btn_start.Dispatcher.Invoke(() => {
+                btn_start.Content = "START";
+                btn_start.Background = Resources["BtnStart"] as SolidColorBrush;
+                btn_start.Click += StartMeasurements;
+                btn_start.Click -= StopMeasurements;
+            });
+
+            btn_showFiles.Dispatcher.Invoke(() => { btn_showFiles.IsEnabled = true; });
+            btn_saveDestination.Dispatcher.Invoke(() => { btn_saveDestination.IsEnabled = true; });
+            btn_configure.Dispatcher.Invoke(() => { btn_configure.IsEnabled = true; });
+            btn_showFiles.Dispatcher.Invoke(() => { btn_changePort.IsEnabled = true; });
+            progressBar.Dispatcher.Invoke(() => { progressBar.IsIndeterminate = false; });
+
+
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -54,18 +89,12 @@ namespace DataAcquisition
             btn_showFiles.IsEnabled = false;
             progressBar.IsIndeterminate = false;
 
+            MeasurementsStart += OnMeasurementsStart;
+            MeasurementsStop += OnMeasurementsStop;
+
             receiveDataThread = new Thread(ReceiveDataLoop);
-            //btn_start.Click -= StartMeasurements;
-            //btn_start.Click += WyslijChar;
         }
-
-        private void WyslijChar(object sender, RoutedEventArgs e)
-        {
-            serialPort.WriteLine("abecadlo");
-            serialPort.ReadTimeout = 1000;
-            Debug.WriteLine(serialPort.ReadExisting());
-        }
-
+        
         private bool ReceiveDataBlock()
         {
             while (serialPort.ReadChar() != '#') ;
@@ -110,7 +139,6 @@ namespace DataAcquisition
                     ADC3_rawData[j] = record;
                 }
             }
-            
             return true;
         }
         
@@ -171,12 +199,9 @@ namespace DataAcquisition
 
         private void StartMeasurements(object sender, RoutedEventArgs e)
         {
-            
-            
             if (serialPort.IsOpen)
             {
-
-                ChangeToStop();
+                
                 isStopped = false;
                 CreateDataFiles();
 
@@ -208,6 +233,8 @@ namespace DataAcquisition
                     serialPort.WriteLine("DIG");
                 }
 
+                MeasurementsStart?.Invoke(this, new EventArgs());
+
                 Thread receiveDataThread = new Thread(ReceiveDataLoop);
                 receiveDataThread.Start();
             }
@@ -221,40 +248,14 @@ namespace DataAcquisition
         private void StopMeasurements(object sender, RoutedEventArgs e)
         {
             isStopped = true;
-            ChangeToStart();
+            
             if(receiveDataThread.IsAlive)
             {
                 receiveDataThread.Join();
             }
-            
+            MeasurementsStop?.Invoke(this, new EventArgs());
         }
-
-        private void ChangeToStop()
-        {
-            
-            btn_start.Content = "STOP";
-            btn_start.Background = Resources["BtnStop"] as SolidColorBrush;
-            btn_start.Click -= StartMeasurements;
-            btn_start.Click += StopMeasurements;
-            btn_showFiles.IsEnabled = false;
-            btn_saveDestination.IsEnabled = false;
-            btn_configure.IsEnabled = false;
-            btn_changePort.IsEnabled = false;
-            progressBar.IsIndeterminate = true;
-        } 
-
-        private void ChangeToStart()
-        {
-            btn_start.Content = "START";
-            btn_start.Background = Resources["BtnStart"] as SolidColorBrush;
-            btn_start.Click += StartMeasurements;
-            btn_start.Click -= StopMeasurements;
-            btn_showFiles.IsEnabled = true;
-            btn_saveDestination.IsEnabled = true;
-            btn_configure.IsEnabled = true;
-            btn_changePort.IsEnabled = true;
-            progressBar.IsIndeterminate = false;
-        }
+        
 
         private void CreateDataFiles()
         {
@@ -351,7 +352,7 @@ namespace DataAcquisition
 
             }
 
-            ChangeToStart();
+            MeasurementsStop?.Invoke(this, new EventArgs());
         }
 
         private void SaveToCSV()
