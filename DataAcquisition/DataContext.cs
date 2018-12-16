@@ -20,5 +20,6 @@ namespace DataAcquisition
         public const int MinBufferSize = 1;
         public const double MaxFrequency = 1000000;
         public const double MinFrequency = 0.5;
+        public static string DefaultPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
     }
 }

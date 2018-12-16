@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using Microsoft.Win32;
 using System.Windows.Media;
 using System.Diagnostics;
+using System.Linq;
 
 namespace DataAcquisition
 {
@@ -30,6 +31,39 @@ namespace DataAcquisition
 
         public event EventHandler MeasurementsStart;
         public event EventHandler MeasurementsStop;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            if (!ChooseAndOpenPort())
+            {
+                //port choice window closed, end of program
+                Close();
+            }
+
+            DataAcquisition.DataContext.Port = string.Empty;
+            DataAcquisition.DataContext.Mode = DataAcquisition.DataContext.Modes.SingleShot;
+            DataAcquisition.DataContext.HowManyADC = 1;
+            DataAcquisition.DataContext.Frequency = 1000;
+            DataAcquisition.DataContext.BufferSize = 1600;
+            DataAcquisition.DataContext.SavePath = DataAcquisition.DataContext.DefaultPath;
+
+            ADC1_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
+            ADC2_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
+            ADC3_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
+
+            lbl_frequency.Content = DataAcquisition.DataContext.Frequency.ToString("0.###") + " Hz";
+            lbl_mode.Content = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot ?
+                "single-shot" : "ciągły";
+            btn_showFiles.IsEnabled = false;
+            progressBar.IsIndeterminate = false;
+
+            MeasurementsStart += OnMeasurementsStart;
+            MeasurementsStop += OnMeasurementsStop;
+
+            receiveDataThread = new Thread(ReceiveDataLoop);
+        }
 
         protected void OnMeasurementsStart(object sender, EventArgs e)
         {
@@ -59,42 +93,8 @@ namespace DataAcquisition
             btn_showFiles.Dispatcher.Invoke(() => { btn_changePort.IsEnabled = true; });
             progressBar.Dispatcher.Invoke(() => { progressBar.IsIndeterminate = false; });
 
-
         }
 
-        public MainWindow()
-        {
-            InitializeComponent();
-
-            if (!ChooseAndOpenPort())
-            {
-                //port choice window closed, end of program
-                this.Close();
-            }
-
-            DataAcquisition.DataContext.Port = String.Empty;
-            DataAcquisition.DataContext.Mode = DataAcquisition.DataContext.Modes.SingleShot;
-            DataAcquisition.DataContext.HowManyADC = 1;
-            DataAcquisition.DataContext.Frequency = 1000;
-            DataAcquisition.DataContext.BufferSize = 1600;
-            DataAcquisition.DataContext.SavePath=String.Empty;
-
-            ADC1_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
-            ADC2_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
-            ADC3_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
-
-            lbl_frequency.Content = DataAcquisition.DataContext.Frequency.ToString("0.###") + " Hz";
-            lbl_mode.Content = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot ?
-                "single-shot" : "ciągły";
-            btn_showFiles.IsEnabled = false;
-            progressBar.IsIndeterminate = false;
-
-            MeasurementsStart += OnMeasurementsStart;
-            MeasurementsStop += OnMeasurementsStop;
-
-            receiveDataThread = new Thread(ReceiveDataLoop);
-        }
-        
         private bool ReceiveDataBlock()
         {
             while (serialPort.ReadChar() != '#') ;
@@ -208,6 +208,11 @@ namespace DataAcquisition
                 serialPort.DiscardOutBuffer();
                 serialPort.DiscardInBuffer();
 
+                if(DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.Continuous)
+                {
+                    DataAcquisition.DataContext.BufferSize = DataAcquisition.DataContext.MaxBufferSize;
+                }
+
                 serialPort.WriteLine("ACQ:SRAT " + DataAcquisition.DataContext.Frequency.ToString("0.###"));
                 serialPort.WriteLine("ACQ:POIN " + DataAcquisition.DataContext.BufferSize.ToString());
 
@@ -300,7 +305,7 @@ namespace DataAcquisition
         {
             
             serialPort.ReadTimeout = readTimeout;
-            string isReady;
+            string isReady=String.Empty;
             Thread saveToFileThread = new Thread(SaveToCSV);
             while (true)
             {
@@ -308,14 +313,14 @@ namespace DataAcquisition
                 try
                 {
                     while ((isReady = serialPort.ReadExisting()) == String.Empty) ;
-                    if (isReady == "YES\n")
+                    if (isReady.Contains("YES"))
                     {
                         serialPort.WriteLine("WAV:DATA?");
                         if (ReceiveDataBlock())
                         {
                             if(saveToFileThread.ThreadState== System.Threading.ThreadState.Running)
                             {
-                                throw new Exception("Saving previous data to a file is not finished");
+                                throw new Exception("Saving previous data to a file hasn't finished");
                             }
                             else
                             {
@@ -351,7 +356,10 @@ namespace DataAcquisition
                 }
 
             }
-
+            if(saveToFileThread.IsAlive)
+            {
+                saveToFileThread.Join();
+            }
             MeasurementsStop?.Invoke(this, new EventArgs());
         }
 
@@ -363,21 +371,24 @@ namespace DataAcquisition
                     using (var streamWriter = new System.IO.StreamWriter(fileName[2], true))
                     {
                         var csvWriter = new CsvHelper.CsvWriter(streamWriter);
-                        csvWriter.WriteRecords(ADC3_rawData);
+                        var records3 = ADC3_rawData.Take(DataAcquisition.DataContext.BufferSize);
+                        csvWriter.WriteRecords(records3);
                     }
                     goto case 2;
                 case 2:
                     using (var streamWriter = new System.IO.StreamWriter(fileName[1], true))
                     {
                         var csvWriter = new CsvHelper.CsvWriter(streamWriter);
-                        csvWriter.WriteRecords(ADC2_rawData);
+                        var records2 = ADC2_rawData.Take(DataAcquisition.DataContext.BufferSize);
+                        csvWriter.WriteRecords(records2);
                     }
                     goto case 1;
                 case 1:
                     using (var streamWriter = new System.IO.StreamWriter(fileName[0], true))
                     {
                         var csvWriter = new CsvHelper.CsvWriter(streamWriter);
-                        csvWriter.WriteRecords(ADC1_rawData);
+                        var records1 = ADC1_rawData.Take(DataAcquisition.DataContext.BufferSize);
+                        csvWriter.WriteRecords(records1);
                     }
                     break;
                 default:
