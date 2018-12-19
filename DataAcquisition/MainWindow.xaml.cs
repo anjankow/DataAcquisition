@@ -28,7 +28,7 @@ namespace DataAcquisition
         public string[] fileName;
 
         public bool halfToBeWritten;
-        public int sizeToSave;
+        public int sizeToSavePerOneArray;
 
         Thread receiveDataThread;
 
@@ -113,18 +113,19 @@ namespace DataAcquisition
             {
                 throw new Exception("Exception in ReceiveData function: " + e.Message);
             }
-
+            
             Int16 record;
             int i, j;
+            int j_startIndex = halfToBeWritten ? sizeToSavePerOneArray : 0;
             int sizeOfOnePart = sizeOfDataInBytes / DataAcquisition.DataContext.HowManyADC;
-            for (i = 0, j = 0; i < sizeOfOnePart && j < DataAcquisition.DataContext.MaxBufferSize; i += 2, j++)
+            for (i = 0, j = j_startIndex; i < sizeOfOnePart && j < DataAcquisition.DataContext.BufferSize; i += 2, j++)
             {
                 record = BitConverter.ToInt16(dataInBytes, i);
                 ADC1_rawData[j] = record;
             }
             if (DataAcquisition.DataContext.HowManyADC > 1)
             {
-                for (j = 0; i < 2*sizeOfOnePart && j < DataAcquisition.DataContext.MaxBufferSize; i += 2, j++)
+                for (j = j_startIndex; i < 2*sizeOfOnePart && j < DataAcquisition.DataContext.BufferSize; i += 2, j++)
                 {
                     record = BitConverter.ToInt16(dataInBytes, i);
                     ADC2_rawData[j] = record;
@@ -132,7 +133,7 @@ namespace DataAcquisition
             }
             if (DataAcquisition.DataContext.HowManyADC == 3)
             {
-                for (j = 0; i < sizeOfDataInBytes && j < DataAcquisition.DataContext.MaxBufferSize; i += 2, j++)
+                for (j = j_startIndex; i < sizeOfDataInBytes && j < DataAcquisition.DataContext.BufferSize; i += 2, j++)
                 {
                     record = BitConverter.ToInt16(dataInBytes, i);
                     ADC3_rawData[j] = record;
@@ -232,7 +233,6 @@ namespace DataAcquisition
                 {
                     serialPort.WriteLine("DIG");
                 }
-                
             }
             else
             {
@@ -266,42 +266,35 @@ namespace DataAcquisition
             switch (DataAcquisition.DataContext.HowManyADC)
             {
                 case 3:
-                    using (var streamWriter = new System.IO.StreamWriter(fileName[2], false))
-                    {
-                        WriteHeaders(streamWriter);
-                    }
+                    WriteHeaders(fileName[2]);
                     goto case 2;
                 case 2:
-                    using (var streamWriter = new System.IO.StreamWriter(fileName[1], false))
-                    {
-                        WriteHeaders(streamWriter);
-                    }
+                    WriteHeaders(fileName[1]);
                     goto case 1;
                 case 1:
-                    using (var streamWriter = new System.IO.StreamWriter(fileName[0], false))
-                    {
-                        WriteHeaders(streamWriter);
-                    }
+                    WriteHeaders(fileName[0]);
                     break;
                 default:
                     throw new ArgumentException();
-            
             }
             
         }
 
-        private static void WriteHeaders(System.IO.StreamWriter streamWriter)
+        private static void WriteHeaders(string fileName)
         {
-            streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + "\n");
-            streamWriter.Write("frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
+            using (var streamWriter = new System.IO.StreamWriter(fileName, false))
+            {
+                streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + "\n");
+                streamWriter.Write("frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
+            }
         }
-
+        
         private void ReceiveDataLoop()
         {
             serialPort.ReadTimeout = readTimeout;
             string isReady = String.Empty;
 
-            sizeToSave = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.Continuous ?
+            sizeToSavePerOneArray = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.Continuous ?
                     DataAcquisition.DataContext.BufferSize / 2 : DataAcquisition.DataContext.BufferSize;
             halfToBeWritten = false;
 
@@ -384,8 +377,8 @@ namespace DataAcquisition
 
         private void SaveToCSV(string fileName, short[] rawData)
         {
-            int skipValue = halfToBeWritten ? 0 : sizeToSave;
-            var records = rawData.Skip(skipValue).Take(sizeToSave);
+            int skipValue = halfToBeWritten ? 0 : sizeToSavePerOneArray;
+            var records = rawData.Skip(skipValue).Take(sizeToSavePerOneArray);
             using (var streamWriter = new System.IO.StreamWriter(fileName, true))
             {
                 var csvWriter = new CsvHelper.CsvWriter(streamWriter);
