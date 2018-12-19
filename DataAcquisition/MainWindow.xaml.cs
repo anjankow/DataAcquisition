@@ -27,9 +27,12 @@ namespace DataAcquisition
         public int readTimeout = 2000;
         public string[] fileName;
 
+        public bool halfToBeWritten;
+        public int sizeToSave;
+
         Thread receiveDataThread;
 
-        public event EventHandler MeasurementsStart;
+        //public event EventHandler MeasurementsStart;
         public event EventHandler MeasurementsStop;
 
         public MainWindow()
@@ -55,7 +58,7 @@ namespace DataAcquisition
             btn_showFiles.IsEnabled = false;
             progressBar.IsIndeterminate = false;
 
-            MeasurementsStart += OnMeasurementsStart;
+            //MeasurementsStart += OnMeasurementsStart;
             MeasurementsStop += OnMeasurementsStop;
 
             receiveDataThread = new Thread(ReceiveDataLoop);
@@ -298,16 +301,15 @@ namespace DataAcquisition
             serialPort.ReadTimeout = readTimeout;
             string isReady = String.Empty;
 
-            if(DataAcquisition.DataContext.Mode==DataAcquisition.DataContext.Modes.Continuous)
-            {
-                int samplesCountPerReceipt = DataAcquisition.DataContext.BufferSize / 2;
-            }
-            else
-            {
-                int samplesCountPerReceipt = DataAcquisition.DataContext.BufferSize;
-            }
+            sizeToSave = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.Continuous ?
+                    DataAcquisition.DataContext.BufferSize / 2 : DataAcquisition.DataContext.BufferSize;
+            halfToBeWritten = false;
 
-            Thread saveToFileThread = new Thread(() => SaveToCSV());
+            Thread[] saveToFileThreads = new Thread[3];
+            saveToFileThreads[0] = new Thread(() => SaveToCSV(fileName[0], ADC1_rawData));
+            saveToFileThreads[1] = new Thread(() => SaveToCSV(fileName[1], ADC2_rawData));
+            saveToFileThreads[2] = new Thread(() => SaveToCSV(fileName[2], ADC3_rawData));
+
             while (true)
             {
                 serialPort.WriteLine("WAV:COMP?");
@@ -319,19 +321,33 @@ namespace DataAcquisition
                         serialPort.WriteLine("WAV:DATA?");
                         if (ReceiveDataBlock())
                         {
-                            if(saveToFileThread.ThreadState== System.Threading.ThreadState.Running)
+                            foreach(var thread in saveToFileThreads)
                             {
-                                throw new Exception("Saving previous data to the file not completed");
+                                if(thread.ThreadState == System.Threading.ThreadState.Running)
+                                {
+                                    throw new Exception("Saving previous data to the file not completed");
+                                }
                             }
-                            else
+                            saveToFileThreads[0].Start();
+                            if (DataAcquisition.DataContext.HowManyADC > 1)
                             {
-                                saveToFileThread.Start();
+                                saveToFileThreads[1].Start();
+                                if (DataAcquisition.DataContext.HowManyADC == 3)
+                                {
+                                    saveToFileThreads[2].Start();
+                                }
                             }
+                            if (DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot)
+                            {
+                                break;
+                            }
+                            halfToBeWritten = !halfToBeWritten;
                         }
-                        if (DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot)
+                        else
                         {
-                            break;
+                            throw new Exception("Receive data block failure");
                         }
+                        
                     }
                 }
                 catch (InvalidOperationException ex1)
@@ -356,44 +372,24 @@ namespace DataAcquisition
                 }
 
             }
-            if(saveToFileThread.IsAlive)
+            foreach(var thread in saveToFileThreads)
             {
-                saveToFileThread.Join();
+                if (thread.IsAlive)
+                {
+                    thread.Join();
+                }
             }
             MeasurementsStop?.Invoke(this, new EventArgs());
         }
 
-        private void SaveToCSV()
+        private void SaveToCSV(string fileName, short[] rawData)
         {
-            switch (DataAcquisition.DataContext.HowManyADC)
+            int skipValue = halfToBeWritten ? 0 : sizeToSave;
+            var records = rawData.Skip(skipValue).Take(sizeToSave);
+            using (var streamWriter = new System.IO.StreamWriter(fileName, true))
             {
-                case 3:
-                    using (var streamWriter = new System.IO.StreamWriter(fileName[2], true))
-                    {
-                        var csvWriter = new CsvHelper.CsvWriter(streamWriter);
-                        var records3 = ADC3_rawData.Take(DataAcquisition.DataContext.BufferSize);
-                        csvWriter.WriteRecords(records3);
-                    }
-                    goto case 2;
-                case 2:
-                    using (var streamWriter = new System.IO.StreamWriter(fileName[1], true))
-                    {
-                        var csvWriter = new CsvHelper.CsvWriter(streamWriter);
-                        var records2 = ADC2_rawData.Take(DataAcquisition.DataContext.BufferSize);
-                        csvWriter.WriteRecords(records2);
-                    }
-                    goto case 1;
-                case 1:
-                    using (var streamWriter = new System.IO.StreamWriter(fileName[0], true))
-                    {
-                        var csvWriter = new CsvHelper.CsvWriter(streamWriter);
-                        var records1 = ADC1_rawData.Take(DataAcquisition.DataContext.BufferSize);
-                        csvWriter.WriteRecords(records1);
-                    }
-                    break;
-                default:
-                    break;
-
+                var csvWriter = new CsvHelper.CsvWriter(streamWriter);
+                csvWriter.WriteRecords(records);
             }
         }
 
