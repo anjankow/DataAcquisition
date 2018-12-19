@@ -108,7 +108,7 @@ namespace DataAcquisition
             }
             catch(Exception e)
             {
-                throw new Exception("exception in ReceiveData function: " + e.Message);
+                throw new Exception("Exception in ReceiveData function: " + e.Message);
             }
 
             Int16 record;
@@ -240,6 +240,7 @@ namespace DataAcquisition
 
         private void StopMeasurements(object sender, RoutedEventArgs e)
         {
+            serialPort.WriteLine("STOP");
             isStopped = true;
             
             if(receiveDataThread.IsAlive)
@@ -294,16 +295,25 @@ namespace DataAcquisition
 
         private void ReceiveDataLoop()
         {
-            
             serialPort.ReadTimeout = readTimeout;
-            string isReady=String.Empty;
-            Thread saveToFileThread = new Thread(SaveToCSV);
+            string isReady = String.Empty;
+
+            if(DataAcquisition.DataContext.Mode==DataAcquisition.DataContext.Modes.Continuous)
+            {
+                int samplesCountPerReceipt = DataAcquisition.DataContext.BufferSize / 2;
+            }
+            else
+            {
+                int samplesCountPerReceipt = DataAcquisition.DataContext.BufferSize;
+            }
+
+            Thread saveToFileThread = new Thread(() => SaveToCSV());
             while (true)
             {
                 serialPort.WriteLine("WAV:COMP?");
                 try
                 {
-                    while ((isReady = serialPort.ReadExisting()) == String.Empty) ;
+                    while ((isReady = serialPort.ReadExisting()) == String.Empty);
                     if (isReady.Contains("YES"))
                     {
                         serialPort.WriteLine("WAV:DATA?");
@@ -311,7 +321,7 @@ namespace DataAcquisition
                         {
                             if(saveToFileThread.ThreadState== System.Threading.ThreadState.Running)
                             {
-                                throw new Exception("Saving previous data to a file not completed");
+                                throw new Exception("Saving previous data to the file not completed");
                             }
                             else
                             {
@@ -342,7 +352,6 @@ namespace DataAcquisition
                 if (isStopped)
                 {
                     //if a user pressed "STOP" button
-                    serialPort.WriteLine("STOP");
                     break;
                 }
 
