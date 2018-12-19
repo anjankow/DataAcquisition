@@ -46,12 +46,8 @@ namespace DataAcquisition
             DataAcquisition.DataContext.Mode = DataAcquisition.DataContext.Modes.SingleShot;
             DataAcquisition.DataContext.HowManyADC = 1;
             DataAcquisition.DataContext.Frequency = 1000;
-            DataAcquisition.DataContext.BufferSize = 1600;
+            DataAcquisition.DataContext.BufferSize = 3000;
             DataAcquisition.DataContext.SavePath = DataAcquisition.DataContext.DefaultPath;
-
-            ADC1_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
-            ADC2_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
-            ADC3_rawData = new Int16[DataAcquisition.DataContext.MaxBufferSize];
 
             lbl_frequency.Content = DataAcquisition.DataContext.Frequency.ToString("0.###") + " Hz";
             lbl_mode.Content = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot ?
@@ -213,21 +209,17 @@ namespace DataAcquisition
                     DataAcquisition.DataContext.BufferSize = DataAcquisition.DataContext.MaxBufferSize;
                 }
 
+                ADC1_rawData = new Int16[DataAcquisition.DataContext.BufferSize];
+                ADC2_rawData = new Int16[DataAcquisition.DataContext.BufferSize];
+                ADC3_rawData = new Int16[DataAcquisition.DataContext.BufferSize];
+
                 serialPort.WriteLine("ACQ:SRAT " + DataAcquisition.DataContext.Frequency.ToString("0.###"));
                 serialPort.WriteLine("ACQ:POIN " + DataAcquisition.DataContext.BufferSize.ToString());
 
-                switch (DataAcquisition.DataContext.HowManyADC)
-                {
-                    case 1:
-                        serialPort.WriteLine("ROUT:ENAB 1");
-                        break;
-                    case 2:
-                        serialPort.WriteLine("ROUT:ENAB 2");
-                        break;
-                    case 3:
-                        serialPort.WriteLine("ROUT:ENAB 3");
-                        break;
-                }
+                serialPort.WriteLine("ROUT:ENAB " + DataAcquisition.DataContext.HowManyADC);
+
+                Thread receiveDataThread = new Thread(ReceiveDataLoop);
+                receiveDataThread.Start();
 
                 if (DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.Continuous)
                 {
@@ -237,11 +229,7 @@ namespace DataAcquisition
                 {
                     serialPort.WriteLine("DIG");
                 }
-
-                MeasurementsStart?.Invoke(this, new EventArgs());
-
-                Thread receiveDataThread = new Thread(ReceiveDataLoop);
-                receiveDataThread.Start();
+                
             }
             else
             {
@@ -262,6 +250,7 @@ namespace DataAcquisition
         }
         
 
+
         private void CreateDataFiles()
         {
             string dateTimeNow = DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + "_" + String.Format("{0:D2}", DateTime.Now.Hour) + " -" + String.Format("{0:D2}", DateTime.Now.Minute);
@@ -275,25 +264,19 @@ namespace DataAcquisition
                 case 3:
                     using (var streamWriter = new System.IO.StreamWriter(fileName[2], false))
                     {
-                        streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + "\n");
-                        streamWriter.Write("frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
-                        var csvWriter = new CsvHelper.CsvWriter(streamWriter);
+                        WriteHeaders(streamWriter);
                     }
                     goto case 2;
                 case 2:
                     using (var streamWriter = new System.IO.StreamWriter(fileName[1], false))
                     {
-                        streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + "\n");
-                        streamWriter.Write("frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
-                        var csvWriter = new CsvHelper.CsvWriter(streamWriter);
+                        WriteHeaders(streamWriter);
                     }
                     goto case 1;
                 case 1:
                     using (var streamWriter = new System.IO.StreamWriter(fileName[0], false))
                     {
-                        streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + "\n");
-                        streamWriter.Write("frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
-                        var csvWriter = new CsvHelper.CsvWriter(streamWriter);
+                        WriteHeaders(streamWriter);
                     }
                     break;
                 default:
@@ -302,7 +285,12 @@ namespace DataAcquisition
             }
             
         }
-        
+
+        private static void WriteHeaders(System.IO.StreamWriter streamWriter)
+        {
+            streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + "\n");
+            streamWriter.Write("frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
+        }
 
         private void ReceiveDataLoop()
         {
