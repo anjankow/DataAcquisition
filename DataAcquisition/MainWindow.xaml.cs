@@ -60,8 +60,7 @@ namespace DataAcquisition
 
             //MeasurementsStart += OnMeasurementsStart;
             MeasurementsStop += OnMeasurementsStop;
-
-            receiveDataThread = new Thread(ReceiveDataLoop);
+            
         }
 
         protected void OnMeasurementsStart(object sender, EventArgs e)
@@ -222,7 +221,7 @@ namespace DataAcquisition
 
                 serialPort.WriteLine("ROUT:ENAB " + DataAcquisition.DataContext.HowManyADC);
 
-                Thread receiveDataThread = new Thread(ReceiveDataLoop);
+                receiveDataThread = new Thread(ReceiveDataLoop);
                 receiveDataThread.Start();
 
                 if (DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.Continuous)
