@@ -382,7 +382,7 @@ namespace DataAcquisition
 
         private void SaveToCSV(string fileName, short[] rawData)
         {
-            int skipValue = halfToBeWritten ? 0 : sizeToSavePerOneArray;
+            int skipValue = halfToBeWritten ? sizeToSavePerOneArray : 0;
             var records = rawData.Skip(skipValue).Take(sizeToSavePerOneArray);
             using (var streamWriter = new System.IO.StreamWriter(fileName, true))
             {
