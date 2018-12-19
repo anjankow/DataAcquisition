@@ -32,7 +32,7 @@ namespace DataAcquisition
 
         Thread receiveDataThread;
 
-        //public event EventHandler MeasurementsStart;
+        public event EventHandler MeasurementsStart;
         public event EventHandler MeasurementsStop;
 
         public MainWindow()
@@ -58,7 +58,7 @@ namespace DataAcquisition
             btn_showFiles.IsEnabled = false;
             progressBar.IsIndeterminate = false;
 
-            //MeasurementsStart += OnMeasurementsStart;
+            MeasurementsStart += OnMeasurementsStart;
             MeasurementsStop += OnMeasurementsStop;
             
         }
@@ -232,6 +232,7 @@ namespace DataAcquisition
                 {
                     serialPort.WriteLine("DIG");
                 }
+                MeasurementsStart?.Invoke(this, new EventArgs());
             }
             else
             {
@@ -313,22 +314,14 @@ namespace DataAcquisition
                         serialPort.WriteLine("WAV:DATA?");
                         if (ReceiveDataBlock())
                         {
-                            foreach(var thread in saveToFileThreads)
+                            foreach (var thread in saveToFileThreads)
                             {
-                                if(thread.ThreadState == System.Threading.ThreadState.Running)
+                                if (thread.ThreadState == System.Threading.ThreadState.Running)
                                 {
                                     throw new Exception("Saving previous data to the file not completed");
                                 }
                             }
-                            saveToFileThreads[0].Start();
-                            if (DataAcquisition.DataContext.HowManyADC > 1)
-                            {
-                                saveToFileThreads[1].Start();
-                                if (DataAcquisition.DataContext.HowManyADC == 3)
-                                {
-                                    saveToFileThreads[2].Start();
-                                }
-                            }
+                            StartThreads(saveToFileThreads);
                             if (DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot)
                             {
                                 break;
@@ -372,6 +365,19 @@ namespace DataAcquisition
                 }
             }
             MeasurementsStop?.Invoke(this, new EventArgs());
+        }
+
+        private static void StartThreads(Thread[] saveToFileThreads)
+        {
+            saveToFileThreads[0].Start();
+            if (DataAcquisition.DataContext.HowManyADC > 1)
+            {
+                saveToFileThreads[1].Start();
+                if (DataAcquisition.DataContext.HowManyADC == 3)
+                {
+                    saveToFileThreads[2].Start();
+                }
+            }
         }
 
         private void SaveToCSV(string fileName, short[] rawData)
