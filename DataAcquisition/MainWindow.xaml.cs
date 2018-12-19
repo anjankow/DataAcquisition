@@ -275,6 +275,7 @@ namespace DataAcquisition
                 case 3:
                     using (var streamWriter = new System.IO.StreamWriter(fileName[2], false))
                     {
+                        streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + "\n");
                         streamWriter.Write("frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
                         var csvWriter = new CsvHelper.CsvWriter(streamWriter);
                     }
@@ -282,6 +283,7 @@ namespace DataAcquisition
                 case 2:
                     using (var streamWriter = new System.IO.StreamWriter(fileName[1], false))
                     {
+                        streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + "\n");
                         streamWriter.Write("frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
                         var csvWriter = new CsvHelper.CsvWriter(streamWriter);
                     }
@@ -289,6 +291,7 @@ namespace DataAcquisition
                 case 1:
                     using (var streamWriter = new System.IO.StreamWriter(fileName[0], false))
                     {
+                        streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + "\n");
                         streamWriter.Write("frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
                         var csvWriter = new CsvHelper.CsvWriter(streamWriter);
                     }
@@ -320,7 +323,7 @@ namespace DataAcquisition
                         {
                             if(saveToFileThread.ThreadState== System.Threading.ThreadState.Running)
                             {
-                                throw new Exception("Saving previous data to a file hasn't finished");
+                                throw new Exception("Saving previous data to a file not completed");
                             }
                             else
                             {

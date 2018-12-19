@@ -104,6 +104,8 @@ namespace DataAcquisition
             DataAcquisition.DataContext.Mode = DataAcquisition.DataContext.Modes.Continuous;
             txtBox_bufferSize.IsEnabled = false;
             slid_bufferSize.IsEnabled = false;
+            SetButtonOkState();
+
         }
 
         private void Rbtn_singleShot_Checked(object sender, RoutedEventArgs e)
@@ -111,6 +113,8 @@ namespace DataAcquisition
             DataAcquisition.DataContext.Mode = DataAcquisition.DataContext.Modes.SingleShot;
             txtBox_bufferSize.IsEnabled = true;
             slid_bufferSize.IsEnabled = true;
+            SetButtonOkState();
+
         }
 
         private void Slid_frequency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
