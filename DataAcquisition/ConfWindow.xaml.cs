@@ -117,6 +117,11 @@ namespace DataAcquisition
 
         }
 
+        private void Rbtns_1to3_Checked(object sender, RoutedEventArgs e)
+        {
+            SetButtonOkState();
+        }
+
         private void Slid_frequency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             txtBox_frequency.Text = slid_frequency.Value.ToString("######0.00");
