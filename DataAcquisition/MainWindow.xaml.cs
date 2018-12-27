@@ -243,13 +243,13 @@ namespace DataAcquisition
 
         private void StopMeasurements(object sender, RoutedEventArgs e)
         {
-            serialPort.WriteLine("STOP");
             isStopped = true;
-            
             if(receiveDataThread.IsAlive)
             {
                 receiveDataThread.Join();
             }
+
+            serialPort.WriteLine("STOP");
             MeasurementsStop?.Invoke(this, new EventArgs());
         }
         
@@ -284,8 +284,11 @@ namespace DataAcquisition
         {
             using (var streamWriter = new System.IO.StreamWriter(fileName, false))
             {
-                streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + "\n");
-                streamWriter.Write("frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
+                streamWriter.Write("mode," + DataAcquisition.DataContext.Mode.ToString("g") + ",,");
+                streamWriter.Write("sampling frequency," + DataAcquisition.DataContext.Frequency.ToString() + ",Hz\n\n");
+                streamWriter.Write("V ref," + 3.3 + ",,");
+                streamWriter.Write("max val," + 4096 + "\n\n");
+
             }
         }
         
@@ -303,12 +306,12 @@ namespace DataAcquisition
             saveToFileThreads[1] = new Thread(() => SaveToCSV(fileName[1], ADC2_rawData));
             saveToFileThreads[2] = new Thread(() => SaveToCSV(fileName[2], ADC3_rawData));
 
-            while (true)
+            while (!isStopped)
             {
                 serialPort.WriteLine("WAV:COMP?");
                 try
                 {
-                    while ((isReady = serialPort.ReadExisting()) == String.Empty);
+                    while ((isReady = serialPort.ReadExisting()) == String.Empty && isStopped != true);
                     if (isReady.Contains("YES"))
                     {
                         serialPort.WriteLine("WAV:DATA?");
@@ -316,9 +319,10 @@ namespace DataAcquisition
                         {
                             foreach (var thread in saveToFileThreads)
                             {
-                                if (thread.ThreadState == System.Threading.ThreadState.Running)
+                                if (thread.IsAlive)
                                 {
-                                    throw new Exception("Saving previous data to the file not completed");
+                                    thread.Join();
+                                    Debug.WriteLine("Saving previous data not completed, waiting for thread to join");
                                 }
                             }
                             StartThreads(saveToFileThreads);
@@ -348,12 +352,6 @@ namespace DataAcquisition
                 catch(Exception ex3)
                 {
                     MessageBox.Show(ex3.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-                if (isStopped)
-                {
-                    //if a user pressed "STOP" button
-                    break;
                 }
 
             }
