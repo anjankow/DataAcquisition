@@ -54,7 +54,7 @@ namespace DataAcquisition
 
             lbl_frequency.Content = DataAcquisition.DataContext.Frequency.ToString("0.###") + " Hz";
             lbl_mode.Content = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot ?
-                "single-shot" : "ciągły";
+                "jednokrotnego\nwyzwalania" : "ciągły";
             btn_showFiles.IsEnabled = false;
             progressBar.IsIndeterminate = false;
 
@@ -191,7 +191,7 @@ namespace DataAcquisition
             confWindow.ShowDialog();
             lbl_frequency.Content = DataAcquisition.DataContext.Frequency.ToString("0.###") + " Hz";
             lbl_mode.Content = DataAcquisition.DataContext.Mode == DataAcquisition.DataContext.Modes.SingleShot ?
-                "single-shot" : "ciągły";
+                "jednokrotnego\nwyzwalania" : "ciągły";
         }
 
 
